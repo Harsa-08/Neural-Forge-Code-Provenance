@@ -5,7 +5,7 @@ import {
 import {
   Users, Calendar, FolderGit2, Briefcase, BookOpen, Megaphone,
   ShieldCheck, Trash2, Activity, BarChart3, Clock, ChevronDown,
-  RefreshCw, Shield, AlertTriangle,
+  RefreshCw, Shield, AlertTriangle, Search,
 } from 'lucide-react';
 
 interface AdminViewProps {
@@ -56,6 +56,8 @@ export const AdminView: React.FC<AdminViewProps> = ({
   const [activeContentTab, setActiveContentTab] = useState<ContentTab>('users');
   const [confirmDelete, setConfirmDelete] = useState<{ id: string; label: string; handler: () => Promise<boolean> } | null>(null);
   const [loadingLogs, setLoadingLogs] = useState(false);
+  const [logSearch, setLogSearch] = useState('');
+  const [contentSearch, setContentSearch] = useState('');
 
   useEffect(() => {
     handleRefreshLogs();
@@ -72,6 +74,42 @@ export const AdminView: React.FC<AdminViewProps> = ({
     await confirmDelete.handler();
     setConfirmDelete(null);
   };
+
+  const filteredLogs = activityLogs.filter(log => {
+    if (!logSearch.trim()) return true;
+    const q = logSearch.toLowerCase();
+    return (
+      log.username.toLowerCase().includes(q) ||
+      log.action.toLowerCase().includes(q) ||
+      log.target.toLowerCase().includes(q)
+    );
+  });
+
+  const qContent = contentSearch.toLowerCase().trim();
+
+  const filteredMembers = members.filter(m =>
+    !qContent || m.username.toLowerCase().includes(qContent) || m.email.toLowerCase().includes(qContent) || m.institution.toLowerCase().includes(qContent) || m.role.toLowerCase().includes(qContent)
+  );
+
+  const filteredEvents = events.filter(e =>
+    !qContent || e.title.toLowerCase().includes(qContent) || e.category.toLowerCase().includes(qContent) || e.location.toLowerCase().includes(qContent)
+  );
+
+  const filteredProjects = projects.filter(p =>
+    !qContent || p.title.toLowerCase().includes(qContent) || p.domain.toLowerCase().includes(qContent) || p.authorName.toLowerCase().includes(qContent)
+  );
+
+  const filteredOpportunities = opportunities.filter(o =>
+    !qContent || o.title.toLowerCase().includes(qContent) || o.companyOrOrg.toLowerCase().includes(qContent) || o.type.toLowerCase().includes(qContent)
+  );
+
+  const filteredResources = resources.filter(r =>
+    !qContent || r.title.toLowerCase().includes(qContent) || r.category.toLowerCase().includes(qContent) || r.type.toLowerCase().includes(qContent)
+  );
+
+  const filteredAnnouncements = announcements.filter(a =>
+    !qContent || a.title.toLowerCase().includes(qContent) || a.category.toLowerCase().includes(qContent) || a.authorName.toLowerCase().includes(qContent)
+  );
 
   const stats = [
     { label: 'Total Members', value: members.length, icon: Users, color: 'from-indigo-500 to-indigo-600' },
@@ -132,35 +170,50 @@ export const AdminView: React.FC<AdminViewProps> = ({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Activity Feed */}
         <div className="lg:col-span-2 bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
-          <div className="flex items-center justify-between mb-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
             <div className="flex items-center gap-2">
               <Activity className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               <h2 className="font-bold text-slate-900 dark:text-white">User Activity Feed</h2>
+              <span className="text-xs bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded-full font-semibold">
+                {filteredLogs.length}
+              </span>
             </div>
-            <button
-              onClick={handleRefreshLogs}
-              disabled={loadingLogs}
-              className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 ${loadingLogs ? 'animate-spin' : ''}`} />
-              Refresh
-            </button>
+            <div className="flex items-center gap-2">
+              <div className="relative flex-1 sm:w-48">
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  placeholder="Filter activity..."
+                  value={logSearch}
+                  onChange={(e) => setLogSearch(e.target.value)}
+                  className="w-full text-xs pl-8 pr-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+                />
+              </div>
+              <button
+                onClick={handleRefreshLogs}
+                disabled={loadingLogs}
+                className="flex items-center gap-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${loadingLogs ? 'animate-spin' : ''}`} />
+                Refresh
+              </button>
+            </div>
           </div>
 
-          {activityLogs.length === 0 ? (
+          {filteredLogs.length === 0 ? (
             <div className="text-center py-10 text-slate-400 dark:text-slate-500">
               <Activity className="w-8 h-8 mx-auto mb-2 opacity-40" />
-              <p className="text-sm font-medium">No activity logs yet</p>
-              <p className="text-xs mt-1">User actions will appear here once the backend is wired.</p>
+              <p className="text-sm font-medium">No matching activity logs</p>
+              <p className="text-xs mt-1">Try clearing your search filter.</p>
             </div>
           ) : (
             <div className="space-y-3 max-h-96 overflow-y-auto">
-              {activityLogs.map((log) => (
+              {filteredLogs.map((log) => (
                 <div key={log.id} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 dark:bg-slate-700/50 border border-slate-100 dark:border-slate-600">
                   <img
                     src={log.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&auto=format&fit=crop&q=80'}
                     alt={log.username}
-                    className="w-8 h-8 rounded-full object-cover shrink-0"
+                    className="w-8 h-8 rounded-full object-cover shrink-0 ring-2 ring-indigo-500/20"
                   />
                   <div className="flex-1 min-w-0">
                     <p className="text-sm text-slate-800 dark:text-slate-200">
@@ -219,9 +272,21 @@ export const AdminView: React.FC<AdminViewProps> = ({
 
       {/* Content Management */}
       <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
-        <div className="p-6 border-b border-slate-100 dark:border-slate-700">
-          <h2 className="font-bold text-slate-900 dark:text-white text-lg">Content Management</h2>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">View and delete any content on the platform</p>
+        <div className="p-6 border-b border-slate-100 dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="font-bold text-slate-900 dark:text-white text-lg">Content Management</h2>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">View, search, and delete any content on the platform</p>
+          </div>
+          <div className="relative sm:w-64">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="Search content..."
+              value={contentSearch}
+              onChange={(e) => setContentSearch(e.target.value)}
+              className="w-full text-xs pl-9 pr-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20"
+            />
+          </div>
         </div>
 
         {/* Content Tabs */}
@@ -238,7 +303,12 @@ export const AdminView: React.FC<AdminViewProps> = ({
             >
               {tab.label}
               <span className="ml-1.5 text-xs bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-1.5 py-0.5 rounded-full">
-                {tab.count}
+                {tab.id === 'users' ? filteredMembers.length :
+                 tab.id === 'events' ? filteredEvents.length :
+                 tab.id === 'projects' ? filteredProjects.length :
+                 tab.id === 'opportunities' ? filteredOpportunities.length :
+                 tab.id === 'resources' ? filteredResources.length :
+                 filteredAnnouncements.length}
               </span>
             </button>
           ))}
@@ -248,157 +318,181 @@ export const AdminView: React.FC<AdminViewProps> = ({
           {/* Users Tab */}
           {activeContentTab === 'users' && (
             <div className="space-y-3">
-              {members.map(member => (
-                <div key={member.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
-                  <img
-                    src={member.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&auto=format&fit=crop&q=80'}
-                    alt={member.username}
-                    className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-600 shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{member.username}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{member.email} · {member.institution}</p>
-                  </div>
-                  <div className="flex items-center gap-2 shrink-0">
-                    <div className="relative">
-                      <select
-                        value={member.role}
-                        onChange={(e) => onUpdateMemberRole(member.id, e.target.value as User['role'])}
-                        disabled={member.id === user.id}
-                        className={`text-xs font-semibold px-3 py-1.5 rounded-full border-0 outline-none cursor-pointer appearance-none pr-6 ${ROLE_COLORS[member.role]} disabled:opacity-50 disabled:cursor-not-allowed`}
-                      >
-                        <option value="member">Member</option>
-                        <option value="lead">Lead</option>
-                        <option value="admin">Admin</option>
-                      </select>
-                      <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none opacity-60" />
+              {filteredMembers.length === 0 ? (
+                <p className="text-center py-6 text-slate-400 dark:text-slate-500 text-sm">No members found</p>
+              ) : (
+                filteredMembers.map(member => (
+                  <div key={member.id} className="flex flex-col sm:flex-row sm:items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors">
+                    <img
+                      src={member.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&auto=format&fit=crop&q=80'}
+                      alt={member.username}
+                      className="w-10 h-10 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-600 shrink-0"
+                    />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{member.username}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{member.email} · {member.institution}</p>
                     </div>
-                    {member.id !== user.id && (
-                      <button
-                        onClick={() => setConfirmDelete({
-                          id: member.id,
-                          label: `member "${member.username}"`,
-                          handler: () => onDeleteMember(member.id),
-                        })}
-                        className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    )}
+                    <div className="flex items-center gap-2 shrink-0">
+                      <div className="relative">
+                        <select
+                          value={member.role}
+                          onChange={(e) => onUpdateMemberRole(member.id, e.target.value as User['role'])}
+                          disabled={member.id === user.id}
+                          className={`text-xs font-semibold px-3 py-1.5 rounded-full border-0 outline-none cursor-pointer appearance-none pr-6 ${ROLE_COLORS[member.role]} disabled:opacity-50 disabled:cursor-not-allowed`}
+                        >
+                          <option value="member">Member</option>
+                          <option value="lead">Lead</option>
+                          <option value="admin">Admin</option>
+                        </select>
+                        <ChevronDown className="absolute right-1.5 top-1/2 -translate-y-1/2 w-3 h-3 pointer-events-none opacity-60" />
+                      </div>
+                      {member.id !== user.id && (
+                        <button
+                          onClick={() => setConfirmDelete({
+                            id: member.id,
+                            label: `member "${member.username}"`,
+                            handler: () => onDeleteMember(member.id),
+                          })}
+                          className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
 
           {/* Events Tab */}
           {activeContentTab === 'events' && (
             <div className="space-y-3">
-              {events.map(evt => (
-                <div key={evt.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
-                  <img src={evt.bannerUrl} alt="" className="w-10 h-10 rounded-xl object-cover shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{evt.title}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{evt.category} · {evt.date} · {evt.registeredUserIds.length} registered</p>
+              {filteredEvents.length === 0 ? (
+                <p className="text-center py-6 text-slate-400 dark:text-slate-500 text-sm">No events found</p>
+              ) : (
+                filteredEvents.map(evt => (
+                  <div key={evt.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                    <img src={evt.bannerUrl} alt="" className="w-10 h-10 rounded-xl object-cover shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{evt.title}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{evt.category} · {evt.date} · {evt.registeredUserIds.length} registered</p>
+                    </div>
+                    <button
+                      onClick={() => setConfirmDelete({ id: evt.id, label: `event "${evt.title}"`, handler: () => onDeleteEvent(evt.id) })}
+                      className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setConfirmDelete({ id: evt.id, label: `event "${evt.title}"`, handler: () => onDeleteEvent(evt.id) })}
-                    className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
 
           {/* Projects Tab */}
           {activeContentTab === 'projects' && (
             <div className="space-y-3">
-              {projects.map(proj => (
-                <div key={proj.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
-                  <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0">
-                    <FolderGit2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              {filteredProjects.length === 0 ? (
+                <p className="text-center py-6 text-slate-400 dark:text-slate-500 text-sm">No projects found</p>
+              ) : (
+                filteredProjects.map(proj => (
+                  <div key={proj.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                    <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center shrink-0">
+                      <FolderGit2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{proj.title}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{proj.domain} · By {proj.authorName} · ♥ {proj.likes}</p>
+                    </div>
+                    <button
+                      onClick={() => setConfirmDelete({ id: proj.id, label: `project "${proj.title}"`, handler: () => onDeleteProject(proj.id) })}
+                      className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{proj.title}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{proj.domain} · By {proj.authorName} · ♥ {proj.likes}</p>
-                  </div>
-                  <button
-                    onClick={() => setConfirmDelete({ id: proj.id, label: `project "${proj.title}"`, handler: () => onDeleteProject(proj.id) })}
-                    className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
 
           {/* Opportunities Tab */}
           {activeContentTab === 'opportunities' && (
             <div className="space-y-3">
-              {opportunities.map(opp => (
-                <div key={opp.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
-                  <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
-                    <Briefcase className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              {filteredOpportunities.length === 0 ? (
+                <p className="text-center py-6 text-slate-400 dark:text-slate-500 text-sm">No opportunities found</p>
+              ) : (
+                filteredOpportunities.map(opp => (
+                  <div key={opp.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                    <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900/40 flex items-center justify-center shrink-0">
+                      <Briefcase className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{opp.title}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{opp.type} · {opp.companyOrOrg} · {opp.status}</p>
+                    </div>
+                    <button
+                      onClick={() => setConfirmDelete({ id: opp.id, label: `opportunity "${opp.title}"`, handler: () => onDeleteOpportunity(opp.id) })}
+                      className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{opp.title}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{opp.type} · {opp.companyOrOrg} · {opp.status}</p>
-                  </div>
-                  <button
-                    onClick={() => setConfirmDelete({ id: opp.id, label: `opportunity "${opp.title}"`, handler: () => onDeleteOpportunity(opp.id) })}
-                    className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
 
           {/* Resources Tab */}
           {activeContentTab === 'resources' && (
             <div className="space-y-3">
-              {resources.map(res => (
-                <div key={res.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
-                  <img src={res.thumbnailUrl} alt="" className="w-10 h-10 rounded-xl object-cover shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{res.title}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{res.category} · {res.type} · {res.level}</p>
+              {filteredResources.length === 0 ? (
+                <p className="text-center py-6 text-slate-400 dark:text-slate-500 text-sm">No resources found</p>
+              ) : (
+                filteredResources.map(res => (
+                  <div key={res.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                    <img src={res.thumbnailUrl} alt="" className="w-10 h-10 rounded-xl object-cover shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{res.title}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{res.category} · {res.type} · {res.level}</p>
+                    </div>
+                    <button
+                      onClick={() => setConfirmDelete({ id: res.id, label: `resource "${res.title}"`, handler: () => onDeleteResource(res.id) })}
+                      className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <button
-                    onClick={() => setConfirmDelete({ id: res.id, label: `resource "${res.title}"`, handler: () => onDeleteResource(res.id) })}
-                    className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
 
           {/* Announcements Tab */}
           {activeContentTab === 'announcements' && (
             <div className="space-y-3">
-              {announcements.map(ann => (
-                <div key={ann.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
-                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${ann.category === 'Important' ? 'bg-rose-100 dark:bg-rose-900/40' : 'bg-purple-100 dark:bg-purple-900/40'}`}>
-                    <Megaphone className={`w-5 h-5 ${ann.category === 'Important' ? 'text-rose-600 dark:text-rose-400' : 'text-purple-600 dark:text-purple-400'}`} />
+              {filteredAnnouncements.length === 0 ? (
+                <p className="text-center py-6 text-slate-400 dark:text-slate-500 text-sm">No announcements found</p>
+              ) : (
+                filteredAnnouncements.map(ann => (
+                  <div key={ann.id} className="flex items-center gap-3 p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50">
+                    <div className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${ann.category === 'Important' ? 'bg-rose-100 dark:bg-rose-900/40' : 'bg-purple-100 dark:bg-purple-900/40'}`}>
+                      <Megaphone className={`w-5 h-5 ${ann.category === 'Important' ? 'text-rose-600 dark:text-rose-400' : 'text-purple-600 dark:text-purple-400'}`} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{ann.title}</p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">{ann.category} · {ann.date} · By {ann.authorName}</p>
+                    </div>
+                    <button
+                      onClick={() => setConfirmDelete({ id: ann.id, label: `announcement "${ann.title}"`, handler: () => onDeleteAnnouncement(ann.id) })}
+                      className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-slate-900 dark:text-white text-sm truncate">{ann.title}</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{ann.category} · {ann.date} · By {ann.authorName}</p>
-                  </div>
-                  <button
-                    onClick={() => setConfirmDelete({ id: ann.id, label: `announcement "${ann.title}"`, handler: () => onDeleteAnnouncement(ann.id) })}
-                    className="p-2 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-900/30 rounded-xl transition-all shrink-0"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           )}
         </div>

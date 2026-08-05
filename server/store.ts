@@ -1,14 +1,15 @@
 import fs from 'fs';
 import path from 'path';
-import { User, Event, Project, Announcement, Opportunity, Resource } from '../src/types.js';
+import { User, Event, Project, Announcement, Opportunity, Resource, ActivityLog } from '../src/types.js';
 
-interface DatabaseSchema {
+export interface DatabaseSchema {
   users: (User & { passwordHash: string })[];
   events: Event[];
   projects: Project[];
   announcements: Announcement[];
   opportunities: Opportunity[];
   resources: Resource[];
+  activityLogs: ActivityLog[];
 }
 
 const DATA_DIR = path.join(process.cwd(), 'data');
@@ -468,8 +469,78 @@ const INITIAL_DATA: DatabaseSchema = {
       date: '2026-07-25',
       pinned: false
     }
+  ],
+  activityLogs: [
+    {
+      id: 'act_1',
+      userId: 'usr_demo',
+      username: 'Venkat NS',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      action: 'submitted project',
+      target: 'Neural-Forge: AI Code Provenance',
+      targetId: 'proj_1',
+      timestamp: new Date(Date.now() - 3600000 * 2).toISOString()
+    },
+    {
+      id: 'act_2',
+      userId: 'usr_sarah',
+      username: 'Sarah Chen',
+      avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+      action: 'registered for event',
+      target: '24-Hour Embedded IoT & AI Edge Design Sprint',
+      targetId: 'evt_ongoing_1',
+      timestamp: new Date(Date.now() - 3600000 * 5).toISOString()
+    },
+    {
+      id: 'act_3',
+      userId: 'usr_demo',
+      username: 'Venkat NS',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+      action: 'published announcement',
+      target: 'Registration Open for Annual IET Student Paper Contest 2026',
+      targetId: 'ann_1',
+      timestamp: new Date(Date.now() - 3600000 * 12).toISOString()
+    },
+    {
+      id: 'act_4',
+      userId: 'usr_sarah',
+      username: 'Sarah Chen',
+      avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80',
+      action: 'shared resource',
+      target: 'Mastering ROS 2: Robotic Systems',
+      targetId: 'res_2',
+      timestamp: new Date(Date.now() - 3600000 * 24).toISOString()
+    }
   ]
 };
+
+// Helper to append user activity log
+export function logActivity(
+  db: DatabaseSchema,
+  userId: string,
+  username: string,
+  avatarUrl: string | undefined,
+  action: string,
+  target: string,
+  targetId?: string
+): void {
+  if (!db.activityLogs) db.activityLogs = [];
+  const log: ActivityLog = {
+    id: `act_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+    userId,
+    username,
+    avatarUrl,
+    action,
+    target,
+    targetId,
+    timestamp: new Date().toISOString()
+  };
+  db.activityLogs.unshift(log);
+  // Keep last 200 logs
+  if (db.activityLogs.length > 200) {
+    db.activityLogs = db.activityLogs.slice(0, 200);
+  }
+}
 
 // Ensure data directory and file exist
 export function initDb(): DatabaseSchema {
@@ -485,14 +556,15 @@ export function initDb(): DatabaseSchema {
   try {
     const raw = fs.readFileSync(DB_FILE, 'utf-8');
     const parsed = JSON.parse(raw);
-    // Ensure all modules exist and merge any missing seed data for opportunities/resources
+    if (!parsed.activityLogs || !Array.isArray(parsed.activityLogs) || parsed.activityLogs.length === 0) {
+      parsed.activityLogs = INITIAL_DATA.activityLogs;
+    }
     if (!parsed.opportunities || parsed.opportunities.length === 0) {
       parsed.opportunities = INITIAL_DATA.opportunities;
     }
     if (!parsed.resources || parsed.resources.length === 0) {
       parsed.resources = INITIAL_DATA.resources;
     }
-    // Also ensure events & projects have our rich past/present/future seed items if missing
     const existingEventIds = new Set(parsed.events.map((e: Event) => e.id));
     INITIAL_DATA.events.forEach(evt => {
       if (!existingEventIds.has(evt.id)) {
@@ -525,4 +597,5 @@ export function saveDb(data: DatabaseSchema): void {
     console.error('Failed to save db.json', err);
   }
 }
+
 
