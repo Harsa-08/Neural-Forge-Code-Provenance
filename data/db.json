@@ -1,0 +1,621 @@
+{
+  "users": [
+    {
+      "id": "usr_demo",
+      "username": "Venkat NS",
+      "email": "venkatns2008@gmail.com",
+      "passwordHash": "password123",
+      "phone": "+91 98765 43210",
+      "gender": "Male",
+      "dob": "2004-05-15",
+      "city": "Chennai",
+      "institution": "IET Student Chapter - SRM Institute of Science and Technology",
+      "role": "lead",
+      "bio": "Full Stack Engineer & Tech Enthusiast passionate about building impactful community platforms and AI systems.",
+      "skills": [
+        "React",
+        "TypeScript",
+        "Node.js",
+        "Python",
+        "Tailwind CSS",
+        "Docker"
+      ],
+      "interests": [
+        "AI Research",
+        "Open Source",
+        "Embedded Systems",
+        "IoT"
+      ],
+      "githubUrl": "https://github.com",
+      "linkedinUrl": "https://linkedin.com",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+      "points": 450,
+      "joinedAt": "2025-01-10"
+    },
+    {
+      "id": "usr_sarah",
+      "username": "Sarah Chen",
+      "email": "sarah.chen@iet.org",
+      "passwordHash": "password123",
+      "phone": "+91 91234 56789",
+      "gender": "Female",
+      "dob": "2003-09-21",
+      "city": "Bangalore",
+      "institution": "IET Student Chapter - RV College of Engineering",
+      "role": "member",
+      "bio": "IoT Developer & Robotics enthusiast working on autonomous rover projects.",
+      "skills": [
+        "Arduino",
+        "C++",
+        "Python",
+        "ROS",
+        "Circuit Design"
+      ],
+      "interests": [
+        "Robotics",
+        "Space Tech",
+        "Autonomous Systems"
+      ],
+      "githubUrl": "https://github.com",
+      "avatarUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&auto=format&fit=crop&q=80",
+      "points": 320,
+      "joinedAt": "2025-02-01"
+    }
+  ],
+  "events": [
+    {
+      "id": "evt_ongoing_1",
+      "title": "24-Hour Embedded IoT & AI Edge Design Sprint",
+      "description": "Happening now! Teams are building real-time edge inference systems using Raspberry Pi 5 and ESP32 with live mentor feedback and sensor kits provided.",
+      "category": "Hackathon",
+      "date": "2026-08-01",
+      "time": "08:00 AM - 08:00 AM (+1 Day)",
+      "location": "IET Innovation Hall 101 & Virtual Stream",
+      "isVirtual": false,
+      "speaker": "Dr. Anita Roy",
+      "speakerRole": "Head of Edge AI Lab, Texas Instruments",
+      "organizer": "IET Student Chapter Committee",
+      "bannerUrl": "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&auto=format&fit=crop&q=80",
+      "maxCapacity": 120,
+      "registeredUserIds": [
+        "usr_demo",
+        "usr_sarah"
+      ],
+      "tags": [
+        "IoT",
+        "Edge AI",
+        "Live Hackathon",
+        "Hardware"
+      ],
+      "status": "ongoing",
+      "timeline": "present"
+    },
+    {
+      "id": "evt_1",
+      "title": "IET National Hackathon 2026: AI for Social Good",
+      "description": "A 36-hour nationwide hackathon bringing together students and engineers to tackle pressing challenges in healthcare, clean energy, and smart cities.",
+      "category": "Hackathon",
+      "date": "2026-08-15",
+      "time": "09:00 AM - 09:00 PM",
+      "location": "Auditorium A, Tech Campus & Online",
+      "isVirtual": false,
+      "speaker": "Dr. Aris Thorne",
+      "speakerRole": "Chief Innovation Officer, IET Global",
+      "organizer": "IET Student Chapter Committee",
+      "bannerUrl": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=80",
+      "maxCapacity": 250,
+      "registeredUserIds": [
+        "usr_demo",
+        "usr_sarah"
+      ],
+      "tags": [
+        "AI/ML",
+        "Hackathon",
+        "Prizes",
+        "Networking"
+      ],
+      "status": "upcoming",
+      "timeline": "future"
+    },
+    {
+      "id": "evt_2",
+      "title": "Masterclass: Cloud Native Architecture & Microservices",
+      "description": "Learn modern DevOps pipelines, Kubernetes orchestration, and scalable microservices patterns hands-on from industry architects.",
+      "category": "Workshop",
+      "date": "2026-08-22",
+      "time": "02:00 PM - 05:00 PM",
+      "location": "Zoom Virtual Hall 1",
+      "isVirtual": true,
+      "virtualLink": "https://zoom.us/j/iet-connect-masterclass",
+      "speaker": "Priya Sundaram",
+      "speakerRole": "Principal Cloud Architect, AWS Tech Solutions",
+      "organizer": "IET Technical Special Interest Group",
+      "bannerUrl": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=80",
+      "maxCapacity": 150,
+      "registeredUserIds": [
+        "usr_demo"
+      ],
+      "tags": [
+        "Cloud",
+        "DevOps",
+        "Kubernetes",
+        "Backend"
+      ],
+      "status": "upcoming",
+      "timeline": "future"
+    },
+    {
+      "id": "evt_3",
+      "title": "Robotics & Embedded Systems Hands-On Bootcamp",
+      "description": "Build your own sensor-actuator feedback loop using ESP32 and MicroPython with live circuit debugging guidance.",
+      "category": "Workshop",
+      "date": "2026-09-05",
+      "time": "10:00 AM - 04:00 PM",
+      "location": "IoT Innovation Lab 302",
+      "isVirtual": false,
+      "speaker": "Prof. Rajesh Kumar",
+      "speakerRole": "Department of Mechatronics",
+      "organizer": "IET Robotics Society",
+      "bannerUrl": "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=800&auto=format&fit=crop&q=80",
+      "maxCapacity": 60,
+      "registeredUserIds": [
+        "usr_sarah"
+      ],
+      "tags": [
+        "Robotics",
+        "ESP32",
+        "MicroPython",
+        "Hardware"
+      ],
+      "status": "upcoming",
+      "timeline": "future"
+    },
+    {
+      "id": "evt_past_1",
+      "title": "IET International Robotics & Automation Symposium 2025",
+      "description": "Our annual flagship technical conference featuring keynote lectures on autonomous drones, industrial manipulators, and robot ethics. 300+ attendees participated.",
+      "category": "Conference",
+      "date": "2025-11-18",
+      "time": "09:30 AM - 06:00 PM",
+      "location": "Main Convention Center, Hall B",
+      "isVirtual": false,
+      "speaker": "Prof. Hiroshi Tanaka",
+      "speakerRole": "Director, Advanced Robotics Institute",
+      "organizer": "IET Regional Council",
+      "bannerUrl": "https://images.unsplash.com/photo-1515187029135-18ee286d815b?w=800&auto=format&fit=crop&q=80",
+      "maxCapacity": 350,
+      "registeredUserIds": [
+        "usr_demo",
+        "usr_sarah"
+      ],
+      "tags": [
+        "Robotics",
+        "Conference",
+        "Keynotes",
+        "Archived"
+      ],
+      "status": "completed",
+      "timeline": "past",
+      "recordingUrl": "https://youtube.com/watch?v=iet_symposium_2025",
+      "galleryUrls": [
+        "https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=600&auto=format&fit=crop&q=80",
+        "https://images.unsplash.com/photo-1511578314322-379afb476865?w=600&auto=format&fit=crop&q=80"
+      ]
+    },
+    {
+      "id": "evt_past_2",
+      "title": "Green Tech & Sustainable Energy Grid Workshop",
+      "description": "Hands-on design session on smart grid micro-inverters and solar energy integration for engineering campuses.",
+      "category": "Workshop",
+      "date": "2026-02-14",
+      "time": "10:00 AM - 01:00 PM",
+      "location": "Electrical Engineering Seminar Hall",
+      "isVirtual": false,
+      "speaker": "Dr. Vivek Sharma",
+      "speakerRole": "Chief Engineer, National Grid Systems",
+      "organizer": "IET Energy Interest Group",
+      "bannerUrl": "https://images.unsplash.com/photo-1497435334941-8c899ee9e8e9?w=800&auto=format&fit=crop&q=80",
+      "maxCapacity": 80,
+      "registeredUserIds": [
+        "usr_sarah"
+      ],
+      "tags": [
+        "CleanEnergy",
+        "SmartGrid",
+        "Sustainability"
+      ],
+      "status": "completed",
+      "timeline": "past"
+    }
+  ],
+  "projects": [
+    {
+      "id": "proj_present_1",
+      "title": "Neuromorphic Audio Processing Chip Firmware",
+      "tagline": "Ultra-low power acoustic anomaly detection for industrial pipeline monitoring.",
+      "description": "Currently building custom firmware for spiking neural network hardware to detect early stress fractures and leaks in high-pressure conduits with sub-milliwatt power consumption.",
+      "domain": "IoT & Embedded",
+      "authorId": "usr_sarah",
+      "authorName": "Sarah Chen",
+      "authorInstitution": "RV College of Engineering",
+      "teamMembers": [
+        "Sarah Chen",
+        "Rohan Varma",
+        "Dr. S. K. Bose"
+      ],
+      "githubUrl": "https://github.com/iet-projects/neuromorphic-audio-firmware",
+      "demoUrl": "https://neuromorphic-audio.example.com",
+      "likes": 52,
+      "likedByUserIds": [
+        "usr_demo"
+      ],
+      "tags": [
+        "Embedded",
+        "Neuromorphic",
+        "EdgeAI",
+        "Active Build"
+      ],
+      "createdAt": "2026-07-15",
+      "imageUrl": "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=800&auto=format&fit=crop&q=80",
+      "status": "Active",
+      "timeline": "present",
+      "achievements": "Selected for IET R&D Innovation Showcase 2026"
+    },
+    {
+      "id": "proj_1",
+      "title": "Smart Solar-Powered Grid Monitor",
+      "tagline": "An IoT telemetry system monitoring distributed solar panel efficiency in real-time.",
+      "description": "Utilizes ESP32 microcontrollers with current sensors and MQTT protocol to stream voltage/current telemetry to a cloud dashboard with anomaly detection.",
+      "domain": "IoT & Embedded",
+      "authorId": "usr_sarah",
+      "authorName": "Sarah Chen",
+      "authorInstitution": "RV College of Engineering",
+      "teamMembers": [
+        "Sarah Chen",
+        "Anand Kumar",
+        "Meera Nair"
+      ],
+      "githubUrl": "https://github.com/iet-projects/smart-solar-grid",
+      "demoUrl": "https://solar-monitor-demo.example.com",
+      "likes": 38,
+      "likedByUserIds": [
+        "usr_demo"
+      ],
+      "tags": [
+        "ESP32",
+        "MQTT",
+        "CleanEnergy",
+        "IoT"
+      ],
+      "createdAt": "2026-07-20",
+      "imageUrl": "https://images.unsplash.com/photo-1509391365360-2e959784a276?w=600&auto=format&fit=crop&q=80",
+      "status": "Active",
+      "timeline": "present"
+    },
+    {
+      "id": "proj_2",
+      "title": "MedAssist AI: Emergency Triaging Assistant",
+      "tagline": "AI-assisted medical symptom analyzer and preliminary triage router for rural clinics.",
+      "description": "Leverages Gemini multimodal vision and NLP model to assist field healthcare workers in classifying medical urgency and generating diagnostic summaries.",
+      "domain": "AI / ML",
+      "authorId": "usr_demo",
+      "authorName": "Venkat NS",
+      "authorInstitution": "SRM Institute of Science and Technology",
+      "teamMembers": [
+        "Venkat NS",
+        "Devi Prasad"
+      ],
+      "githubUrl": "https://github.com/iet-projects/medassist-ai",
+      "demoUrl": "https://medassist-ai-demo.example.com",
+      "likes": 64,
+      "likedByUserIds": [
+        "usr_demo",
+        "usr_sarah"
+      ],
+      "tags": [
+        "Gemini AI",
+        "Healthcare",
+        "React",
+        "NodeJS"
+      ],
+      "createdAt": "2026-07-28",
+      "imageUrl": "https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=600&auto=format&fit=crop&q=80",
+      "status": "Active",
+      "timeline": "present"
+    },
+    {
+      "id": "proj_past_1",
+      "title": "Autonomous Agricultural Seed Rover (AgriBotX)",
+      "tagline": "AI-guided four-wheel rover for precision seed placement and soil moisture mapping.",
+      "description": "Completed in late 2025. This project designed and tested an autonomous field rover capable of reducing herbicide use by 40% through computer vision targeting.",
+      "domain": "Robotics",
+      "authorId": "usr_sarah",
+      "authorName": "Sarah Chen",
+      "authorInstitution": "RV College of Engineering",
+      "teamMembers": [
+        "Sarah Chen",
+        "Karthik R",
+        "Deepak S"
+      ],
+      "githubUrl": "https://github.com/iet-projects/agribot-rover",
+      "demoUrl": "https://agribotx-archive.example.com",
+      "likes": 89,
+      "likedByUserIds": [
+        "usr_demo"
+      ],
+      "tags": [
+        "Robotics",
+        "ROS",
+        "Computer Vision",
+        "Award Winner"
+      ],
+      "createdAt": "2025-10-10",
+      "imageUrl": "https://images.unsplash.com/photo-1558346490-a72e53ae2d4f?w=800&auto=format&fit=crop&q=80",
+      "status": "Completed",
+      "timeline": "past",
+      "achievements": "Gold Medal - IET National Student Design Excellence Award 2025"
+    },
+    {
+      "id": "proj_future_1",
+      "title": "Quantum Key Distribution Protocol for LEO CubeSats",
+      "tagline": "Proposed optical communication layer for tamper-proof satellite telemetry.",
+      "description": "A 2026-2027 R&D proposal investigating entanglement-based cryptographic key exchange for university educational CubeSat missions.",
+      "domain": "Cybersecurity",
+      "authorId": "usr_demo",
+      "authorName": "Venkat NS",
+      "authorInstitution": "SRM Institute of Science and Technology",
+      "teamMembers": [
+        "Venkat NS",
+        "Dr. M. S. Swamy"
+      ],
+      "githubUrl": "https://github.com/iet-projects/qkd-cubesat-research",
+      "likes": 27,
+      "likedByUserIds": [
+        "usr_sarah"
+      ],
+      "tags": [
+        "Quantum",
+        "CubeSat",
+        "Cybersecurity",
+        "Research Proposal"
+      ],
+      "createdAt": "2026-07-30",
+      "imageUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=800&auto=format&fit=crop&q=80",
+      "status": "Research",
+      "timeline": "future",
+      "achievements": "Under Review for IET Research Fellowship Grant 2026"
+    }
+  ],
+  "opportunities": [
+    {
+      "id": "opp_1",
+      "title": "AI & Edge Computing Research Fellow",
+      "companyOrOrg": "IET Advanced Technologies Lab",
+      "type": "Research Fellowship",
+      "location": "Bangalore / Remote Hybrid",
+      "stipendOrSalary": "₹35,000 / month + Research Grant",
+      "deadline": "2026-08-30",
+      "description": "Join the IET Special Interest Group on AI to co-author papers on low-latency edge inference models for autonomous robotics. Includes mentorship from senior fellows.",
+      "applyUrl": "https://iet.org/fellowships/apply/2026-edge-ai",
+      "requirements": [
+        "Enrolled in 3rd/4th year B.Tech or M.Tech in ECE/CSE",
+        "Strong proficiency in Python, PyTorch, and Linux",
+        "Experience with ESP32/Jetson Nano or similar edge hardware is a plus"
+      ],
+      "tags": [
+        "AI Research",
+        "Edge Computing",
+        "Stipend",
+        "Fellowship"
+      ],
+      "postedDate": "2026-07-28",
+      "logoUrl": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200&auto=format&fit=crop&q=80",
+      "bannerUrl": "https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=800&auto=format&fit=crop&q=80",
+      "status": "Open",
+      "timeline": "present"
+    },
+    {
+      "id": "opp_2",
+      "title": "Embedded Firmware & IoT Engineering Intern",
+      "companyOrOrg": "NVIDIA Edge AI Systems",
+      "type": "Internship",
+      "location": "Bangalore, India",
+      "stipendOrSalary": "₹60,000 / month",
+      "deadline": "2026-08-20",
+      "description": "Work with the CUDA and Jetson platform engineering teams to optimize real-time sensor fusion and device drivers for industrial robotics.",
+      "applyUrl": "https://nvidia.com/careers/internships/embedded-iot",
+      "requirements": [
+        "Solid C/C++ programming skills and operating system fundamentals",
+        "Familiarity with ARM architecture, RTOS, and communication protocols (SPI, I2C, UART)",
+        "Active contributor to student chapter or open source projects"
+      ],
+      "tags": [
+        "NVIDIA",
+        "Embedded C++",
+        "RTOS",
+        "Robotics"
+      ],
+      "postedDate": "2026-07-25",
+      "logoUrl": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80",
+      "bannerUrl": "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?w=800&auto=format&fit=crop&q=80",
+      "status": "Closing Soon",
+      "timeline": "present"
+    },
+    {
+      "id": "opp_3",
+      "title": "IET Student Chapter Innovation Hackathon Grant 2026",
+      "companyOrOrg": "IET Global Student Fund",
+      "type": "Hackathon Grant",
+      "location": "National (All Chapters)",
+      "stipendOrSalary": "Up to ₹1,50,000 per team",
+      "deadline": "2026-09-15",
+      "description": "Financial support and hardware component reimbursement for student teams building prototypes in sustainable energy, medical electronics, or civic tech.",
+      "applyUrl": "https://iet.org/grants/student-innovation-2026",
+      "requirements": [
+        "Team of 3-4 active IET Student Chapter members",
+        "Detailed project blueprint and bill of materials (BOM)",
+        "Commitment to open-sourcing project documentation"
+      ],
+      "tags": [
+        "Funding",
+        "Hardware Grant",
+        "Innovation",
+        "Student Teams"
+      ],
+      "postedDate": "2026-07-15",
+      "logoUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200&auto=format&fit=crop&q=80",
+      "bannerUrl": "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&auto=format&fit=crop&q=80",
+      "status": "Open",
+      "timeline": "future"
+    },
+    {
+      "id": "opp_past_1",
+      "title": "ISRO Student Satellite Payload Development Program 2025",
+      "companyOrOrg": "Indian Space Research Organisation (ISRO) & IET",
+      "type": "Mentorship",
+      "location": "Bangalore Space Center",
+      "stipendOrSalary": "Fully Sponsored Fellowship",
+      "deadline": "2025-12-01",
+      "description": "Archived opportunity from 2025. Selected student leads collaborated with ISRO scientists on CubeSat communication modules.",
+      "applyUrl": "https://isro.gov.in/student-satellites-archive",
+      "requirements": [
+        "3rd Year ECE/Aerospace students with strong RF and antenna design skills"
+      ],
+      "tags": [
+        "SpaceTech",
+        "ISRO",
+        "CubeSat",
+        "Archived"
+      ],
+      "postedDate": "2025-10-01",
+      "logoUrl": "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&auto=format&fit=crop&q=80",
+      "bannerUrl": "https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&auto=format&fit=crop&q=80",
+      "status": "Closed",
+      "timeline": "past"
+    }
+  ],
+  "resources": [
+    {
+      "id": "res_1",
+      "title": "Modern Embedded Systems with ARM Cortex-M & C++",
+      "description": "Comprehensive e-book covering register-level programming, interrupt controllers, DMA, and real-time operating system (RTOS) design for ARM microcontrollers.",
+      "category": "Electronics & IoT",
+      "type": "E-Book",
+      "authorOrProvider": "IET Technical Publications",
+      "url": "https://iet.org/resources/ebooks/arm-cortex-modern-cpp",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&auto=format&fit=crop&q=80",
+      "tags": [
+        "ARM Cortex",
+        "C++",
+        "RTOS",
+        "Embedded"
+      ],
+      "level": "Intermediate",
+      "featured": true,
+      "timeline": "present",
+      "publishedYear": "2026"
+    },
+    {
+      "id": "res_2",
+      "title": "Deep Learning for Engineering Applications (PyTorch & Gemini)",
+      "description": "14-module interactive video course on building computer vision and sensor time-series models for preventative industrial maintenance.",
+      "category": "AI & Data Science",
+      "type": "Course",
+      "authorOrProvider": "Dr. Aris Thorne & IET Academy",
+      "url": "https://iet.org/academy/courses/deep-learning-engineering",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=600&auto=format&fit=crop&q=80",
+      "tags": [
+        "AI/ML",
+        "PyTorch",
+        "Gemini AI",
+        "Computer Vision"
+      ],
+      "level": "All Levels",
+      "featured": true,
+      "timeline": "present",
+      "publishedYear": "2026"
+    },
+    {
+      "id": "res_3",
+      "title": "ESP32 & MQTT Industrial IoT Circuit Prototyping Toolkit",
+      "description": "Open-source schematic templates, PCB Gerber files, and MicroPython boilerplate for sensor nodes with MQTT SSL encryption.",
+      "category": "Electronics & IoT",
+      "type": "Toolkit",
+      "authorOrProvider": "IET Robotics Society",
+      "url": "https://github.com/iet-resources/esp32-industrial-iot-toolkit",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&auto=format&fit=crop&q=80",
+      "tags": [
+        "ESP32",
+        "PCB Design",
+        "MQTT",
+        "MicroPython"
+      ],
+      "level": "Beginner",
+      "featured": false,
+      "timeline": "present",
+      "publishedYear": "2026"
+    },
+    {
+      "id": "res_4",
+      "title": "Full-Stack TypeScript & Cloud Microservices Architecture Guide",
+      "description": "Official reference documentation and architectural blueprints for deploying scalable containerized Express and React applications on Cloud Run.",
+      "category": "Web & Cloud",
+      "type": "Documentation",
+      "authorOrProvider": "AWS & GCP Technical Advisory Group",
+      "url": "https://iet.org/docs/cloud-native-typescript",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=600&auto=format&fit=crop&q=80",
+      "tags": [
+        "TypeScript",
+        "Cloud Run",
+        "Microservices",
+        "Docker"
+      ],
+      "level": "Advanced",
+      "featured": true,
+      "timeline": "present",
+      "publishedYear": "2026"
+    },
+    {
+      "id": "res_past_1",
+      "title": "Engineering Career & Technical Interview Mastery (2025 Edition)",
+      "description": "Archived handbook of 250+ real hardware, embedded, and software engineering interview questions from top core engineering firms.",
+      "category": "Career & Interview",
+      "type": "E-Book",
+      "authorOrProvider": "IET Career Development Center",
+      "url": "https://iet.org/resources/career-handbook-2025",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1507238691740-187a5b1d37b8?w=600&auto=format&fit=crop&q=80",
+      "tags": [
+        "Interviews",
+        "Career",
+        "Resume",
+        "Handbook"
+      ],
+      "level": "All Levels",
+      "featured": false,
+      "timeline": "past",
+      "publishedYear": "2025"
+    }
+  ],
+  "announcements": [
+    {
+      "id": "ann_1",
+      "title": "Registration Open for Annual IET Student Paper Contest 2026",
+      "content": "Submit your original engineering research papers by August 30th. Top papers will receive publication grants and presentation opportunities at the IET International Summit.",
+      "category": "Important",
+      "authorName": "IET Executive Council",
+      "authorRole": "Chapter Management",
+      "date": "2026-07-29",
+      "pinned": true
+    },
+    {
+      "id": "ann_2",
+      "title": "New Member Mentorship Program Launched!",
+      "content": "We are thrilled to launch the 1-on-1 industry mentorship drive. Senior members and alumni can now register as mentors to guide junior students in research and careers.",
+      "category": "General",
+      "authorName": "Student Activities Committee",
+      "authorRole": "Mentorship Lead",
+      "date": "2026-07-25",
+      "pinned": false
+    }
+  ]
+}
