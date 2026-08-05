@@ -109,10 +109,20 @@ export interface Announcement {
   pinned: boolean;
 }
 
+export interface ActivityLog {
+  id: string;
+  userId: string;
+  username: string;
+  avatarUrl?: string;
+  action: string;
+  target: string;
+  targetId?: string;
+  timestamp: string;
+}
+
 export interface AuthResponse {
   success: boolean;
   user?: User;
   token?: string;
   message?: string;
 }
-

@@ -1,15 +1,12 @@
-import { User, Event, Project, Announcement, Opportunity, Resource, AuthResponse } from './types';
-
+import { User, Event, Project, Announcement, Opportunity, Resource, AuthResponse, ActivityLog } from './types';
 
 const TOKEN_KEY = 'iet_auth_token';
-
 let memoryToken: string | null = null;
 
 export function getStoredToken(): string | null {
   try {
     return localStorage.getItem(TOKEN_KEY) || sessionStorage.getItem(TOKEN_KEY) || memoryToken;
-  } catch (err) {
-    console.warn('Storage access denied (running in sandboxed iframe?), falling back to memory storage:', err);
+  } catch {
     return memoryToken;
   }
 }
@@ -22,8 +19,8 @@ export function setStoredToken(token: string, remember: boolean = true): void {
     } else {
       sessionStorage.setItem(TOKEN_KEY, token);
     }
-  } catch (err) {
-    console.warn('Storage write denied, using memory storage only:', err);
+  } catch {
+    // memory only
   }
 }
 
@@ -32,44 +29,39 @@ export function removeStoredToken(): void {
   try {
     localStorage.removeItem(TOKEN_KEY);
     sessionStorage.removeItem(TOKEN_KEY);
-  } catch (err) {
-    console.warn('Storage delete denied, using memory storage only:', err);
+  } catch {
+    // ignore
   }
 }
 
 function getAuthHeaders(): HeadersInit {
   const token = getStoredToken();
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
   return headers;
 }
 
-// In-memory cache & request deduplication for optimized APIs
+// In-memory cache & request deduplication
 const apiCache = new Map<string, { timestamp: number; data: any }>();
 const inFlightRequests = new Map<string, Promise<any>>();
-const CACHE_TTL = 30000; // 30 seconds TTL
+const CACHE_TTL = 30000;
 
 async function fetchWithCache<T>(url: string): Promise<T> {
   const now = Date.now();
   const cached = apiCache.get(url);
-  if (cached && now - cached.timestamp < CACHE_TTL) {
-    return cached.data;
-  }
-  if (inFlightRequests.has(url)) {
-    return inFlightRequests.get(url);
-  }
-  const promise = fetch(url).then(res => res.json()).then(data => {
-    apiCache.set(url, { timestamp: Date.now(), data });
-    inFlightRequests.delete(url);
-    return data;
-  }).catch(err => {
-    inFlightRequests.delete(url);
-    throw err;
-  });
+  if (cached && now - cached.timestamp < CACHE_TTL) return cached.data;
+  if (inFlightRequests.has(url)) return inFlightRequests.get(url);
+  const promise = fetch(url)
+    .then(res => res.json())
+    .then(data => {
+      apiCache.set(url, { timestamp: Date.now(), data });
+      inFlightRequests.delete(url);
+      return data;
+    })
+    .catch(err => {
+      inFlightRequests.delete(url);
+      throw err;
+    });
   inFlightRequests.set(url, promise);
   return promise;
 }
@@ -83,7 +75,7 @@ export function invalidateApiCache(url?: string): void {
 }
 
 export const api = {
-  // Auth
+  // ── Auth ─────────────────────────────────────────────────────────────
   async register(data: {
     username: string;
     email: string;
@@ -100,9 +92,7 @@ export const api = {
       body: JSON.stringify(data),
     });
     const json = await res.json();
-    if (json.success && json.token) {
-      setStoredToken(json.token);
-    }
+    if (json.success && json.token) setStoredToken(json.token);
     return json;
   },
 
@@ -113,19 +103,14 @@ export const api = {
       body: JSON.stringify({ email, password }),
     });
     const json = await res.json();
-    if (json.success && json.token) {
-      setStoredToken(json.token);
-    }
+    if (json.success && json.token) setStoredToken(json.token);
     return json;
   },
 
   async getMe(): Promise<{ success: boolean; user?: User; message?: string }> {
     const token = getStoredToken();
     if (!token) return { success: false, message: 'No token' };
-
-    const res = await fetch('/api/auth/me', {
-      headers: getAuthHeaders(),
-    });
+    const res = await fetch('/api/auth/me', { headers: getAuthHeaders() });
     return res.json();
   },
 
@@ -138,12 +123,31 @@ export const api = {
     return res.json();
   },
 
-  // Directory
+  // ── Members / Users (admin) ───────────────────────────────────────────
   async getMembers(): Promise<{ success: boolean; members: User[] }> {
     return fetchWithCache('/api/members');
   },
 
-  // Events
+  async updateMemberRole(userId: string, role: User['role']): Promise<{ success: boolean; user?: User; message?: string }> {
+    invalidateApiCache('/api/members');
+    const res = await fetch(`/api/admin/users/${userId}/role`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ role }),
+    });
+    return res.json();
+  },
+
+  async deleteMember(userId: string): Promise<{ success: boolean; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/admin/users/${userId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  // ── Events ────────────────────────────────────────────────────────────
   async getEvents(): Promise<{ success: boolean; events: Event[] }> {
     return fetchWithCache('/api/events');
   },
@@ -167,7 +171,26 @@ export const api = {
     return res.json();
   },
 
-  // Projects
+  async updateEvent(eventId: string, eventData: Partial<Event>): Promise<{ success: boolean; event?: Event; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/events/${eventId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(eventData),
+    });
+    return res.json();
+  },
+
+  async deleteEvent(eventId: string): Promise<{ success: boolean; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/events/${eventId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  // ── Projects ──────────────────────────────────────────────────────────
   async getProjects(): Promise<{ success: boolean; projects: Project[] }> {
     return fetchWithCache('/api/projects');
   },
@@ -182,6 +205,25 @@ export const api = {
     return res.json();
   },
 
+  async updateProject(projectId: string, projectData: Partial<Project>): Promise<{ success: boolean; project?: Project; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/projects/${projectId}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(projectData),
+    });
+    return res.json();
+  },
+
+  async deleteProject(projectId: string): Promise<{ success: boolean; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/projects/${projectId}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
   async toggleLikeProject(projectId: string): Promise<{ success: boolean; liked?: boolean; likesCount?: number; project?: Project }> {
     invalidateApiCache();
     const res = await fetch(`/api/projects/${projectId}/like`, {
@@ -191,12 +233,41 @@ export const api = {
     return res.json();
   },
 
-  // Announcements
+  // ── Announcements ─────────────────────────────────────────────────────
   async getAnnouncements(): Promise<{ success: boolean; announcements: Announcement[] }> {
     return fetchWithCache('/api/announcements');
   },
 
-  // Opportunities
+  async createAnnouncement(data: Partial<Announcement>): Promise<{ success: boolean; announcement?: Announcement; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch('/api/announcements', {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
+  async updateAnnouncement(id: string, data: Partial<Announcement>): Promise<{ success: boolean; announcement?: Announcement; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/announcements/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return res.json();
+  },
+
+  async deleteAnnouncement(id: string): Promise<{ success: boolean; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/announcements/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  // ── Opportunities ─────────────────────────────────────────────────────
   async getOpportunities(): Promise<{ success: boolean; opportunities: Opportunity[] }> {
     return fetchWithCache('/api/opportunities');
   },
@@ -211,7 +282,26 @@ export const api = {
     return res.json();
   },
 
-  // Resources
+  async updateOpportunity(id: string, oppData: Partial<Opportunity>): Promise<{ success: boolean; opportunity?: Opportunity; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/opportunities/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(oppData),
+    });
+    return res.json();
+  },
+
+  async deleteOpportunity(id: string): Promise<{ success: boolean; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/opportunities/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  // ── Resources ─────────────────────────────────────────────────────────
   async getResources(): Promise<{ success: boolean; resources: Resource[] }> {
     return fetchWithCache('/api/resources');
   },
@@ -226,7 +316,47 @@ export const api = {
     return res.json();
   },
 
-  // Batch dashboard optimization
+  async updateResource(id: string, resData: Partial<Resource>): Promise<{ success: boolean; resource?: Resource; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/resources/${id}`, {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify(resData),
+    });
+    return res.json();
+  },
+
+  async deleteResource(id: string): Promise<{ success: boolean; message?: string }> {
+    invalidateApiCache();
+    const res = await fetch(`/api/resources/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    });
+    return res.json();
+  },
+
+  // ── Admin ─────────────────────────────────────────────────────────────
+  async getActivityLogs(): Promise<{ success: boolean; logs: ActivityLog[] }> {
+    const res = await fetch('/api/admin/activity', { headers: getAuthHeaders() });
+    return res.json();
+  },
+
+  async getAdminStats(): Promise<{
+    success: boolean;
+    stats?: {
+      totalUsers: number;
+      totalEvents: number;
+      totalProjects: number;
+      totalOpportunities: number;
+      totalResources: number;
+      totalAnnouncements: number;
+    };
+  }> {
+    const res = await fetch('/api/admin/stats', { headers: getAuthHeaders() });
+    return res.json();
+  },
+
+  // ── Batch Dashboard ───────────────────────────────────────────────────
   async getDashboardSummary() {
     const [events, projects, announcements, opportunities, resources] = await Promise.all([
       fetchWithCache<{ success: boolean; events: Event[] }>('/api/events'),
@@ -242,6 +372,5 @@ export const api = {
       opportunities: opportunities.opportunities || [],
       resources: resources.resources || [],
     };
-  }
+  },
 };
-
