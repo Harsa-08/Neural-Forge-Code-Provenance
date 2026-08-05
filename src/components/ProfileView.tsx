@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { User } from '../types';
 import { Mail, Phone, MapPin, Building, Calendar, Edit3, Github, Linkedin, ShieldCheck, Sparkles, Check, X, Tag } from 'lucide-react';
+import { PhoneInput } from './PhoneInput';
 
 interface ProfileViewProps {
   user: User;
@@ -137,12 +138,12 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateProfile 
               </div>
 
               <div>
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Phone Number</label>
-                <input
-                  type="text"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="w-full p-2 bg-yellow-50 border border-red-400 rounded-none text-xs"
+                <PhoneInput
+                  value={formData.phone || ''}
+                  onChange={(fullNumber) => setFormData({ ...formData, phone: fullNumber })}
+                  required={false}
+                  label="Phone Number"
+                  id="profile-phone-input"
                 />
               </div>
 
