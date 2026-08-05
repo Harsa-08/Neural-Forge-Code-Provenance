@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { api } from '../api';
 import { User } from '../types';
-import { UserCheck, Lock, Mail, Phone, Calendar, MapPin, Building, User as UserIcon, Sparkles, AlertCircle, ArrowRight } from 'lucide-react';
+import { UserCheck, Lock, Mail, Phone, Calendar, MapPin, Building, User as UserIcon, Sparkles, AlertCircle, ArrowRight, ShieldAlert, AlertTriangle } from 'lucide-react';
 import { PhoneInput } from './PhoneInput';
 
 interface AuthViewProps {
   onAuthSuccess: (user: User) => void;
+  onAddNotification?: (notif: { title: string; message: string; type: 'warning' | 'error' | 'info' | 'success'; category?: 'duplicate_registration' | 'account' | 'event' | 'system' }) => void;
 }
 
-export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
+export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess, onAddNotification }) => {
   const [isLoginView, setIsLoginView] = useState(true);
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [duplicateAlert, setDuplicateAlert] = useState<string | null>(null);
   const [isPhoneValid, setIsPhoneValid] = useState(true);
 
   // Login state
@@ -37,6 +39,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
       return;
     }
     setErrorMsg(null);
+    setDuplicateAlert(null);
     setLoading(true);
 
     try {
@@ -60,6 +63,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
       return;
     }
     setErrorMsg(null);
+    setDuplicateAlert(null);
     setLoading(true);
 
     try {
@@ -67,7 +71,24 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
       if (res.success && res.user) {
         onAuthSuccess(res.user);
       } else {
-        setErrorMsg(res.message || 'Registration failed. Please check your details.');
+        const msg = res.message || 'Registration failed. Please check your details.';
+        const isDuplicate = msg.toLowerCase().includes('already exists') || msg.toLowerCase().includes('duplicate');
+        
+        if (isDuplicate) {
+          const alertMessage = `DUPLICATE REGISTRATION DETECTED: The email address "${regData.email}" is already registered in IET CONNECT. Please sign in to your existing account.`;
+          setDuplicateAlert(alertMessage);
+
+          if (onAddNotification) {
+            onAddNotification({
+              title: 'Duplicate Registration Alert',
+              message: `Registration blocked for "${regData.email}" - an account already exists with this email address.`,
+              type: 'warning',
+              category: 'duplicate_registration'
+            });
+          }
+        } else {
+          setErrorMsg(msg);
+        }
       }
     } catch (err: any) {
       setErrorMsg('Error creating account. Please check your network connection.');
@@ -75,6 +96,7 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
       setLoading(false);
     }
   };
+
 
   // Demo account quick login
   const handleQuickDemoLogin = async (email: string) => {
@@ -130,6 +152,30 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
 
         {/* Form Container */}
         <div className="p-8">
+          {duplicateAlert && (
+            <div className="mb-6 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/50 border-2 border-amber-400 dark:border-amber-700 text-amber-900 dark:text-amber-200 text-xs font-semibold flex items-start gap-3 shadow-sm animate-fadeIn">
+              <ShieldAlert className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+              <div className="space-y-1">
+                <p className="font-extrabold uppercase text-[10px] tracking-wider text-amber-800 dark:text-amber-300">
+                  Notification Alert: Duplicate Account Registration
+                </p>
+                <p className="leading-relaxed">{duplicateAlert}</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsLoginView(true);
+                    setLoginEmail(regData.email);
+                    setDuplicateAlert(null);
+                  }}
+                  className="mt-2 px-3 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
+                >
+                  <span>Switch to Sign In</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            </div>
+          )}
+
           {errorMsg && (
             <div className="mb-6 p-4 rounded-xl bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-medium flex items-start gap-3">
               <AlertCircle className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />

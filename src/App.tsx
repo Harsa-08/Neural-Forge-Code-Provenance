@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { User, Event, Project, Announcement, Opportunity, Resource, ActivityLog } from './types';
+import { User, Event, Project, Announcement, Opportunity, Resource, ActivityLog, NotificationItem } from './types';
 import { api, removeStoredToken } from './api';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
@@ -48,6 +48,78 @@ export default function App() {
   const [opportunities, setOpportunities] = useState<Opportunity[]>([]);
   const [resources, setResources] = useState<Resource[]>([]);
   const [activityLogs, setActivityLogs] = useState<ActivityLog[]>([]);
+
+  // Notifications State
+  const [notifications, setNotifications] = useState<NotificationItem[]>([
+    {
+      id: 'notif_1',
+      title: 'Duplicate Registration Warning',
+      message: 'System Alert: Duplicate registration attempt detected on Event "AI & ML Chapter Hackathon 2026".',
+      type: 'warning',
+      timestamp: '10 mins ago',
+      read: false,
+      category: 'duplicate_registration',
+      linkTab: 'events',
+    },
+    {
+      id: 'notif_2',
+      title: 'Welcome to IET CONNECT Portal',
+      message: 'Explore regional workshops, showcase student projects, and connect with peer members.',
+      type: 'info',
+      timestamp: '1 hour ago',
+      read: false,
+      category: 'system',
+      linkTab: 'dashboard',
+    },
+    {
+      id: 'notif_3',
+      title: 'New Announcement Published',
+      message: 'IET Global HQ London issued paper contest submission guidelines.',
+      type: 'info',
+      timestamp: '2 hours ago',
+      read: true,
+      category: 'system',
+      linkTab: 'announcements',
+    },
+  ]);
+
+  const handleAddNotification = (notif: {
+    title: string;
+    message: string;
+    type: 'warning' | 'error' | 'info' | 'success';
+    category?: 'duplicate_registration' | 'account' | 'event' | 'system';
+    linkTab?: string;
+  }) => {
+    const newItem: NotificationItem = {
+      id: `notif_${Date.now()}`,
+      title: notif.title,
+      message: notif.message,
+      type: notif.type,
+      timestamp: 'Just now',
+      read: false,
+      category: notif.category,
+      linkTab: notif.linkTab,
+    };
+    setNotifications((prev) => [newItem, ...prev]);
+  };
+
+  const handleMarkAsRead = (id: string) => {
+    setNotifications((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+    );
+  };
+
+  const handleMarkAllAsRead = () => {
+    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+  };
+
+  const handleClearAllNotifications = () => {
+    setNotifications([]);
+  };
+
+  const handleDeleteNotification = (id: string) => {
+    setNotifications((prev) => prev.filter((n) => n.id !== id));
+  };
 
   // Toast
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
@@ -394,6 +466,11 @@ export default function App() {
         setSearchQuery={setSearchQuery}
         isDarkMode={isDarkMode}
         toggleDarkMode={toggleDarkMode}
+        notifications={notifications}
+        onMarkAsRead={handleMarkAsRead}
+        onMarkAllAsRead={handleMarkAllAsRead}
+        onClearAllNotifications={handleClearAllNotifications}
+        onDeleteNotification={handleDeleteNotification}
       />
 
       <div className="flex flex-1 relative">
@@ -407,7 +484,12 @@ export default function App() {
         />
 
         <main className="flex-1 p-6 sm:p-8 lg:p-10 overflow-y-auto max-w-7xl mx-auto w-full">
-          {activeTab === 'auth' && <AuthView onAuthSuccess={handleAuthSuccess} />}
+          {activeTab === 'auth' && (
+            <AuthView
+              onAuthSuccess={handleAuthSuccess}
+              onAddNotification={handleAddNotification}
+            />
+          )}
 
           {activeTab === 'dashboard' && (
             currentUser ? (
@@ -421,7 +503,10 @@ export default function App() {
                 onLikeProject={handleLikeProject}
               />
             ) : (
-              <AuthView onAuthSuccess={handleAuthSuccess} />
+              <AuthView
+                onAuthSuccess={handleAuthSuccess}
+                onAddNotification={handleAddNotification}
+              />
             )
           )}
 
@@ -433,6 +518,7 @@ export default function App() {
               onCreateEvent={handleCreateEvent}
               onDeleteEvent={handleDeleteEvent}
               searchQuery={searchQuery}
+              onAddNotification={handleAddNotification}
             />
           )}
 

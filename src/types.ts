@@ -126,3 +126,15 @@ export interface AuthResponse {
   token?: string;
   message?: string;
 }
+
+export interface NotificationItem {
+  id: string;
+  title: string;
+  message: string;
+  type: 'info' | 'warning' | 'error' | 'success';
+  timestamp: string;
+  read: boolean;
+  category?: 'duplicate_registration' | 'event' | 'system' | 'account';
+  linkTab?: string;
+}
+

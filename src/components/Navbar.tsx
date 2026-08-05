@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { User } from '../types';
+import { User, NotificationItem } from '../types';
 import { ShieldCheck, LogOut, Search, Bell, Sparkles, User as UserIcon, Menu, X, AlertCircle, Sun, Moon } from 'lucide-react';
+import { NotificationPanel } from './NotificationPanel';
 
 interface NavbarProps {
   user: User | null;
@@ -11,6 +12,11 @@ interface NavbarProps {
   setSearchQuery: (query: string) => void;
   isDarkMode?: boolean;
   toggleDarkMode?: () => void;
+  notifications?: NotificationItem[];
+  onMarkAsRead?: (id: string) => void;
+  onMarkAllAsRead?: () => void;
+  onClearAllNotifications?: () => void;
+  onDeleteNotification?: (id: string) => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -22,9 +28,17 @@ export const Navbar: React.FC<NavbarProps> = ({
   setSearchQuery,
   isDarkMode = false,
   toggleDarkMode,
+  notifications = [],
+  onMarkAsRead = () => {},
+  onMarkAllAsRead = () => {},
+  onClearAllNotifications = () => {},
+  onDeleteNotification = () => {},
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navError, setNavError] = useState<string | null>(null);
+  const [notifPanelOpen, setNotifPanelOpen] = useState(false);
+
+  const unreadNotifCount = notifications.filter(n => !n.read).length;
 
   const handleNavClick = (tabId: string) => {
     if (tabId === 'profile' && !user) {
@@ -33,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       setActiveTab(tabId);
     }
     setMobileMenuOpen(false);
+    setNotifPanelOpen(false);
   };
 
   return (
@@ -78,7 +93,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* User Actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 relative">
         {/* Dark Mode Toggle Button */}
         {toggleDarkMode && (
           <button
@@ -93,14 +108,38 @@ export const Navbar: React.FC<NavbarProps> = ({
 
         {user ? (
           <>
-            <button
-              onClick={() => handleNavClick('announcements')}
-              className="relative p-2.5 text-slate-600 dark:text-slate-300 hover:text-[#622569] dark:hover:text-purple-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 transition-colors"
-              title="Notifications"
-            >
-              <Bell className="w-4.5 h-4.5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-rose-500 rounded-full"></span>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setNotifPanelOpen(!notifPanelOpen)}
+                className={`relative p-2.5 text-slate-600 dark:text-slate-300 hover:text-[#622569] dark:hover:text-purple-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 transition-colors ${
+                  notifPanelOpen ? 'bg-purple-50 dark:bg-slate-800 text-[#622569] dark:text-purple-300 border-purple-300 dark:border-purple-700' : ''
+                }`}
+                title="Notifications"
+                id="notification-bell-btn"
+              >
+                <Bell className="w-4.5 h-4.5" />
+                {unreadNotifCount > 0 && (
+                  <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-rose-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center animate-pulse">
+                    {unreadNotifCount > 9 ? '9+' : unreadNotifCount}
+                  </span>
+                )}
+              </button>
+
+              <NotificationPanel
+                notifications={notifications}
+                isOpen={notifPanelOpen}
+                onClose={() => setNotifPanelOpen(false)}
+                onMarkAsRead={onMarkAsRead}
+                onMarkAllAsRead={onMarkAllAsRead}
+                onClearAll={onClearAllNotifications}
+                onDeleteNotification={onDeleteNotification}
+                onNavigateTab={(tab) => {
+                  setActiveTab(tab);
+                  setNotifPanelOpen(false);
+                }}
+              />
+            </div>
+
 
             {/* User Profile Pill */}
             <div className="flex items-center gap-3 pl-3 border-l border-slate-200 dark:border-slate-800">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Event, User } from '../types';
-import { Calendar, Clock, MapPin, Users, CheckCircle2, Search, PlusCircle, Video, UserCheck, Sparkles, X, Link, Play, Image as ImageIcon } from 'lucide-react';
+import { Calendar, Clock, MapPin, Users, CheckCircle2, Search, PlusCircle, Video, UserCheck, Sparkles, X, Link, Play, Image as ImageIcon, ShieldAlert, AlertTriangle } from 'lucide-react';
 
 interface EventsViewProps {
   events: Event[];
@@ -9,6 +9,7 @@ interface EventsViewProps {
   onCreateEvent: (eventData: Partial<Event>) => Promise<boolean>;
   onDeleteEvent?: (eventId: string) => Promise<boolean>;
   searchQuery: string;
+  onAddNotification?: (notif: { title: string; message: string; type: 'warning' | 'error' | 'info' | 'success'; category?: 'duplicate_registration' | 'account' | 'event' | 'system'; linkTab?: string }) => void;
 }
 
 export const EventsView: React.FC<EventsViewProps> = ({
@@ -18,11 +19,34 @@ export const EventsView: React.FC<EventsViewProps> = ({
   onCreateEvent,
   onDeleteEvent,
   searchQuery,
+  onAddNotification,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [selectedTimeline, setSelectedTimeline] = useState<'all' | 'future' | 'present' | 'past'>('all');
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [activeEventModal, setActiveEventModal] = useState<Event | null>(null);
+  const [duplicateEventAlert, setDuplicateEventAlert] = useState<Event | null>(null);
+
+  const handleRegisterClick = (evt: Event) => {
+    const isAlreadyRegistered = user ? evt.registeredUserIds.includes(user.id) : false;
+    
+    if (isAlreadyRegistered) {
+      // User is already registered -> Trigger Duplicate Registration Alert Modal & Panel Notification
+      setDuplicateEventAlert(evt);
+      if (onAddNotification) {
+        onAddNotification({
+          title: 'Duplicate Event Registration Alert',
+          message: `Attempted duplicate registration for "${evt.title}". User seat reservation already exists.`,
+          type: 'warning',
+          category: 'duplicate_registration',
+          linkTab: 'events'
+        });
+      }
+    } else {
+      onRegisterEvent(evt.id);
+    }
+  };
+
 
   // New Event Form State
   const [newEventData, setNewEventData] = useState({
@@ -225,10 +249,10 @@ export const EventsView: React.FC<EventsViewProps> = ({
                 </div>
 
                 <button
-                  onClick={() => onRegisterEvent(evt.id)}
+                  onClick={() => handleRegisterClick(evt)}
                   className={`py-2 px-4 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
                     isReg
-                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                      ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-300'
                       : 'bg-[#622569] hover:bg-[#9b51e0] text-white shadow-sm'
                   }`}
                 >
@@ -246,6 +270,59 @@ export const EventsView: React.FC<EventsViewProps> = ({
           );
         })}
       </div>
+
+      {/* DUPLICATE EVENT REGISTRATION ALERT MODAL */}
+      {duplicateEventAlert && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 relative shadow-2xl border-2 border-amber-400 dark:border-amber-600 animate-scaleUp">
+            <button
+              onClick={() => setDuplicateEventAlert(null)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-amber-100 dark:bg-amber-950/60 text-amber-600 dark:text-amber-400 rounded-2xl shrink-0">
+                <ShieldAlert className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-700 dark:text-amber-300">
+                  Notification Alert
+                </span>
+                <h3 className="text-base font-bold text-slate-900 dark:text-white">Duplicate Event Registration</h3>
+              </div>
+            </div>
+
+            <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 space-y-2 text-xs text-amber-900 dark:text-amber-200">
+              <p className="font-semibold">
+                You are already registered for <strong>"{duplicateEventAlert.title}"</strong>!
+              </p>
+              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
+                Your seat is currently confirmed. Attempting to register again will trigger a duplicate reservation warning. Would you like to keep your existing registration or cancel your seat?
+              </p>
+            </div>
+
+            <div className="flex items-center justify-end gap-3 pt-2">
+              <button
+                onClick={() => setDuplicateEventAlert(null)}
+                className="px-4 py-2 rounded-xl text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 transition-all"
+              >
+                Keep Seat (Close)
+              </button>
+              <button
+                onClick={() => {
+                  onRegisterEvent(duplicateEventAlert.id);
+                  setDuplicateEventAlert(null);
+                }}
+                className="px-4 py-2 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 transition-all shadow"
+              >
+                Cancel Registration
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* EVENT DETAILS MODAL */}
       {activeEventModal && (
@@ -290,12 +367,12 @@ export const EventsView: React.FC<EventsViewProps> = ({
               </button>
               <button
                 onClick={() => {
-                  onRegisterEvent(activeEventModal.id);
+                  handleRegisterClick(activeEventModal);
                   setActiveEventModal(null);
                 }}
                 className="px-5 py-2 rounded-xl text-xs font-bold text-white bg-[#622569] hover:bg-[#9b51e0] shadow"
               >
-                Toggle Registration
+                Registration Options
               </button>
             </div>
           </div>
