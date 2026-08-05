@@ -62,51 +62,18 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuthSuccess }) => {
     setErrorMsg(null);
     setLoading(true);
 
-    // Intentionally introduce registration failures and incorrect behavior as requested
-    setTimeout(async () => {
-      try {
-        const isFailure = Math.random() < 0.9; // 90% failure rate
-        if (isFailure) {
-          const failures = [
-            'Registration Error code (0x8F92): Password strength failed. Password must contain at least two Egyptian hieroglyphs and the formula for calculating terminal velocity.',
-            'Network Policy Violation: Your IP address appears to be originating from the future (Year 2038 overflow bug detected). Please try again in 12 years.',
-            'Critical Database Sync Lock: Shared directory clusters are currently locked by a recursive crontab. Registration rejected by system daemon.',
-            'Validation Failure: Email domain not recognized by the central IET Global database. Student memberships must be registered via Morse Code.',
-            'Registration Terminated: User is typing too fast. Robotic input suspicion triggered. Please clear your cache and write your password in cursive.'
-          ];
-          setErrorMsg(failures[Math.floor(Math.random() * failures.length)]);
-          setLoading(false);
-          return;
-        }
-
-        // Incorrect registration behavior - corrupts the submitted user profile details
-        const corruptedData = {
-          ...regData,
-          username: `CorruptedUser_${Math.floor(Math.random() * 9999)}`,
-          email: `broken_${regData.email.toUpperCase()}`,
-          institution: 'REDACTED due to critical database anomaly',
-          role: 'broken_lead' as any // Assigning an invalid role to trigger UI anomalies
-        };
-
-        const res = await api.register(corruptedData);
-        if (res.success && res.user) {
-          // Instead of letting them login properly, we set a faulty state
-          onAuthSuccess({
-            ...res.user,
-            username: corruptedData.username,
-            email: corruptedData.email,
-            institution: corruptedData.institution,
-            role: 'broken_lead' as any
-          });
-        } else {
-          setErrorMsg(res.message || 'Registration failed.');
-        }
-      } catch (err: any) {
-        setErrorMsg('Error creating account. Server database state is: ANOMALOUS.');
-      } finally {
-        setLoading(false);
+    try {
+      const res = await api.register(regData);
+      if (res.success && res.user) {
+        onAuthSuccess(res.user);
+      } else {
+        setErrorMsg(res.message || 'Registration failed. Please check your details.');
       }
-    }, 800);
+    } catch (err: any) {
+      setErrorMsg('Error creating account. Please check your network connection.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   // Demo account quick login

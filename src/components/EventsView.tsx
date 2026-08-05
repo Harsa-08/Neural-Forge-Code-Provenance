@@ -7,6 +7,7 @@ interface EventsViewProps {
   user: User | null;
   onRegisterEvent: (eventId: string) => void;
   onCreateEvent: (eventData: Partial<Event>) => Promise<boolean>;
+  onDeleteEvent?: (eventId: string) => Promise<boolean>;
   searchQuery: string;
 }
 
@@ -15,6 +16,7 @@ export const EventsView: React.FC<EventsViewProps> = ({
   user,
   onRegisterEvent,
   onCreateEvent,
+  onDeleteEvent,
   searchQuery,
 }) => {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
