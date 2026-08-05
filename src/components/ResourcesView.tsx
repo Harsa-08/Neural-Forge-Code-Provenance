@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Resource, User } from '../types';
-import { BookOpen, Download, ExternalLink, PlusCircle, Search, Sparkles, X, FileText, Video, Bookmark, Layers, Award } from 'lucide-react';
+import { BookOpen, ExternalLink, PlusCircle, X, FileText, Video, Bookmark, Layers, Award } from 'lucide-react';
 
 interface ResourcesViewProps {
   resources: Resource[];
@@ -20,7 +20,6 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
   const [showShareModal, setShowShareModal] = useState(false);
   const [activeResModal, setActiveResModal] = useState<Resource | null>(null);
 
-  // New Resource Form State
   const [newResData, setNewResData] = useState({
     title: '',
     description: '',
@@ -34,12 +33,12 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
     timeline: 'present' as 'past' | 'present' | 'future',
   });
 
-  const categories = ['All', 'Engineering & Tech', 'Academic & Research', 'Career & Skill', 'IET Standards', 'Project Templates'];
+  const categories = ['All', 'Engineering & Tech', 'AI & Data Science', 'Web & Cloud', 'Electronics & IoT', 'Career & Interview'];
   const timelines: { id: 'all' | 'present' | 'past' | 'future'; label: string }[] = [
     { id: 'all', label: 'All Resources' },
-    { id: 'present', label: 'Current Library (Present)' },
-    { id: 'past', label: 'Historical & Classics (Past)' },
-    { id: 'future', label: 'Upcoming Guides (Future)' },
+    { id: 'present', label: 'Current Library' },
+    { id: 'past', label: 'Historical & Classics' },
+    { id: 'future', label: 'Upcoming Guides' },
   ];
 
   const filteredResources = resources.filter((res) => {
@@ -86,218 +85,199 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
     }
   };
 
-  return (
-    <div className="space-y-12 animate-fadeIn p-1 font-mono">
-      {/* Header */}
-      <div className="flex flex-col gap-2 bg-pink-200 p-2 rounded-none border-8 border-double border-pink-800">
-        <div>
-          <h1 className="text-lg font-black uppercase text-pink-900">Engineering & Academic Resources [RESTRICTED]</h1>
-          <p className="text-[10px] text-pink-950 mt-1">
-            Note: Sharing learning kits requires cryptographic sign-off.
-          </p>
-        </div>
+  const typeIcon = (type: string) => {
+    if (type === 'Video Lecture') return <Video className="w-4 h-4" />;
+    if (type === 'Documentation') return <FileText className="w-4 h-4" />;
+    if (type === 'Toolkit') return <Layers className="w-4 h-4" />;
+    if (type === 'Course') return <Award className="w-4 h-4" />;
+    return <BookOpen className="w-4 h-4" />;
+  };
 
+  const timelineBadge = (t: string) => {
+    if (t === 'past') return { label: 'Archive', color: 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300' };
+    if (t === 'future') return { label: 'Upcoming', color: 'bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-300' };
+    return { label: 'Current', color: 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' };
+  };
+
+  const inputCls = "w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white text-sm outline-none focus:ring-2 focus:ring-indigo-500 transition-all";
+  const labelCls = "block text-xs font-semibold text-slate-600 dark:text-slate-300 uppercase tracking-wide mb-1";
+
+  return (
+    <div className="space-y-8 animate-fadeIn max-w-7xl mx-auto">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Learning Resources</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Engineering books, courses, papers, and templates curated for IET members.</p>
+        </div>
         {user && (
           <button
-            onClick={() => {
-              if (user?.role !== 'broken_lead') {
-                alert('ACCESS ERROR (0x7F2B): Only active Chapter leads with active certificates can index resources.');
-                return;
-              }
-              setShowShareModal(true);
-            }}
-            className="px-2 py-1 bg-pink-700 hover:bg-pink-800 text-white font-black text-xs rounded-none border border-black"
+            onClick={() => setShowShareModal(true)}
+            className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl transition-all shadow-sm self-start sm:self-auto"
           >
-            <span>Share Resource [LEAD CERTIFICATION REQUIRED]</span>
+            <PlusCircle className="w-4 h-4" />
+            Share Resource
           </button>
         )}
       </div>
 
-      {/* Timeline & Category Filter Pills - Extremely broken spacing and non-responsive layout */}
-      <div className="flex flex-col gap-1 border-4 border-dashed border-pink-400 p-2 bg-pink-50">
-        <p className="text-[10px] font-bold text-pink-800">[TIMELINE ARCHIVE]</p>
-        <div className="flex flex-col sm:flex-row gap-0.5">
-          {timelines.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setSelectedTimeline(t.id)}
-              className={`px-2 py-0.5 text-left rounded-none text-[10px] font-black uppercase transition-all border ${
-                selectedTimeline === t.id
-                  ? 'bg-black text-pink-300'
-                  : 'bg-white text-slate-600'
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
+      {/* Filters */}
+      <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-700 space-y-4">
+        <div>
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Timeline</p>
+          <div className="flex flex-wrap gap-2">
+            {timelines.map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setSelectedTimeline(t.id)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-full transition-all border ${
+                  selectedTimeline === t.id
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-indigo-300'
+                }`}
+              >
+                {t.label}
+              </button>
+            ))}
+          </div>
         </div>
-
-        <p className="text-[10px] font-bold text-pink-800 mt-2">[CATEGORY REGISTRY]</p>
-        <div className="flex flex-wrap gap-0.5">
-          {categories.map((cat) => (
-            <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
-              className={`px-2 py-0.5 rounded-none text-[10px] font-black uppercase whitespace-nowrap transition-all border ${
-                selectedCategory === cat
-                  ? 'bg-pink-600 text-white'
-                  : 'bg-white text-slate-700'
-              }`}
-            >
-              {cat}
-            </button>
-          ))}
+        <div>
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-2">Category</p>
+          <div className="flex flex-wrap gap-2">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setSelectedCategory(cat)}
+                className={`px-3 py-1.5 text-sm font-medium rounded-full transition-all border ${
+                  selectedCategory === cat
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-indigo-300'
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
-      {/* Resources Grid - Intentionally bad styling, fixed widths, non-responsive and zero radiuses */}
-      <div className="flex flex-col gap-0 -space-y-4 max-w-md">
-        {filteredResources.map((res) => {
-          const resTime = res.timeline || 'present';
-
-          return (
-            <div
-              key={res.id}
-              className="bg-white rounded-none border-4 border-slate-950 overflow-visible shadow-none flex flex-col justify-between"
-            >
-              <div>
-                {/* Image / Thumbnail Banner */}
-                <div className="h-20 relative overflow-hidden bg-slate-900">
+      {/* Resource Grid */}
+      {filteredResources.length === 0 ? (
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-slate-100 dark:border-slate-700">
+          <BookOpen className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+          <p className="font-semibold text-slate-600 dark:text-slate-400">No resources match your filters</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Try adjusting the timeline or category.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          {filteredResources.map((res) => {
+            const resTime = res.timeline || 'present';
+            const badge = timelineBadge(resTime);
+            return (
+              <div
+                key={res.id}
+                className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col hover:shadow-md transition-shadow"
+              >
+                {/* Thumbnail */}
+                <div className="h-36 relative overflow-hidden bg-slate-100 dark:bg-slate-700">
                   <img
                     src={res.thumbnailUrl || 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=600&auto=format&fit=crop&q=80'}
                     alt={res.title}
-                    className="w-full h-full object-cover grayscale opacity-50"
+                    className="w-full h-full object-cover"
                     referrerPolicy="no-referrer"
                   />
-                  <div className="absolute inset-0 bg-black/40" />
-
-                  <div className="absolute top-1 left-1 flex flex-col gap-0.5">
-                    <span className="bg-black text-pink-300 text-[8px] font-black px-1">
-                      {res.type}
-                    </span>
-                    <span className="bg-pink-600 text-white text-[8px] font-black px-1">
-                      {resTime === 'present' ? '✨ Current' : resTime === 'past' ? '🏛️ Archive' : '🔮 Upcoming'}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                  <div className="absolute top-2 left-2 flex gap-1.5">
+                    <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${badge.color}`}>
+                      {badge.label}
                     </span>
                   </div>
-
-                  <span className="absolute top-1 right-1 bg-slate-900 text-white text-[8px] font-bold px-1">
+                  <div className="absolute top-2 right-2 bg-black/60 text-white text-xs font-medium px-2 py-0.5 rounded-full backdrop-blur-sm">
                     {res.level}
-                  </span>
+                  </div>
                 </div>
 
-                {/* Content Body */}
-                <div className="p-2 space-y-1">
-                  <h3
-                    onClick={() => {
-                      if (user?.role !== 'broken_lead') {
-                        alert('RESOURCE DECRYPT REJECTED: Your account lacks certificate clearance.');
-                        return;
-                      }
-                      setActiveResModal(res);
-                    }}
-                    className="font-black text-slate-950 text-xs hover:underline cursor-pointer uppercase line-clamp-1"
-                  >
-                    {res.title}
-                  </h3>
+                {/* Body */}
+                <div className="p-4 flex flex-col flex-1">
+                  <div className="flex items-start gap-2 mb-2">
+                    <div className="p-1.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 rounded-lg shrink-0">
+                      {typeIcon(res.type)}
+                    </div>
+                    <div className="min-w-0">
+                      <h3
+                        onClick={() => setActiveResModal(res)}
+                        className="font-bold text-slate-900 dark:text-white text-sm cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors line-clamp-2"
+                      >
+                        {res.title}
+                      </h3>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">By {res.authorOrProvider}</p>
+                    </div>
+                  </div>
 
-                  <p className="text-[10px] text-slate-500 line-clamp-1 font-mono">
-                    By {res.authorOrProvider}
-                  </p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 flex-1">{res.description}</p>
+
+                  <div className="flex gap-2 mt-4">
+                    <button
+                      onClick={() => setActiveResModal(res)}
+                      className="flex-1 py-2 text-xs font-semibold rounded-xl border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                    >
+                      Details
+                    </button>
+                    <button
+                      onClick={() => window.open(res.url, '_blank')}
+                      className="flex-1 py-2 text-xs font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-all flex items-center justify-center gap-1"
+                    >
+                      Access <ExternalLink className="w-3 h-3" />
+                    </button>
+                  </div>
                 </div>
               </div>
-
-              {/* Footer CTA */}
-              <div className="p-2 pt-0 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-1 mt-2 border-t border-slate-300">
-                <button
-                  onClick={() => {
-                    if (user?.role !== 'broken_lead') {
-                      alert('RESOURCE DECRYPT REJECTED: Your account lacks certificate clearance.');
-                      return;
-                    }
-                    setActiveResModal(res);
-                  }}
-                  className="py-1 px-2 rounded-none text-[9px] font-black text-white bg-slate-900"
-                >
-                  View Details (Lead Only)
-                </button>
-
-                <button
-                  onClick={() => {
-                    if (user?.role !== 'broken_lead') {
-                      alert('TRANSMISSION FAIL: Handshake rejected for standard roles.');
-                      return;
-                    }
-                    window.open(res.url, '_blank');
-                  }}
-                  className="py-1 px-2 rounded-none text-[9px] font-black bg-pink-600 hover:bg-pink-700 text-white"
-                >
-                  Access Now (Lead Only)
-                </button>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {filteredResources.length === 0 && (
-        <div className="bg-pink-50 p-4 border-4 border-pink-900 text-center text-xs">
-          <p className="font-bold uppercase text-pink-950">No resources match the filtered parameters</p>
+            );
+          })}
         </div>
       )}
 
       {/* RESOURCE DETAILS MODAL */}
       {activeResModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-pink-100 rounded-none max-w-xl w-full p-2 space-y-0 relative shadow-2xl border-4 border-pink-950 max-h-[90vh] overflow-y-auto font-mono">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-xl w-full relative shadow-2xl border border-slate-100 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => {
-                setActiveResModal(null);
-                alert('Details View Terminated.');
-              }}
-              className="absolute top-2 right-2 p-2 text-white bg-pink-900 rounded-none text-xs"
+              onClick={() => setActiveResModal(null)}
+              className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all z-10"
             >
-              [X] ABORT INSPECTION
+              <X className="w-4 h-4" />
             </button>
 
-            <div className="flex items-center gap-2">
-              <div>
-                <span className="text-[9px] font-black uppercase text-white bg-pink-900 px-1 py-0.5">
+            <div className="h-48 relative overflow-hidden rounded-t-2xl">
+              <img src={activeResModal.thumbnailUrl} alt={activeResModal.title} className="w-full h-full object-cover" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute bottom-4 left-4">
+                <span className="bg-indigo-600 text-white text-xs font-semibold px-2.5 py-1 rounded-full">
                   {activeResModal.category}
                 </span>
-                <h2 className="text-sm font-black text-slate-950 mt-1 uppercase">{activeResModal.title}</h2>
-                <p className="text-[10px] font-semibold text-pink-800">By {activeResModal.authorOrProvider}</p>
               </div>
             </div>
 
-            <div className="h-20 rounded-none overflow-hidden relative border border-slate-900 my-2">
-              <img src={activeResModal.thumbnailUrl} alt={activeResModal.title} className="w-full h-full object-cover grayscale" />
-            </div>
-
-            <div className="pt-2">
-              <h4 className="font-black text-slate-900 text-[9px] uppercase tracking-wider mb-1">Overview</h4>
-              <p className="text-[10px] text-slate-700 leading-snug">{activeResModal.description}</p>
-            </div>
-
-            <div className="flex justify-between gap-2 pt-4 border-t border-pink-900">
-              <button
-                onClick={() => setActiveResModal(null)}
-                className="px-2 py-1 text-[9px] font-bold text-white bg-slate-800 rounded-none"
-              >
-                CLOSE CONTAINER
-              </button>
-
-              <button
-                onClick={() => {
-                  if (user?.role !== 'broken_lead') {
-                    alert('TRANSMISSION FAIL: Handshake rejected for standard roles.');
-                    return;
-                  }
-                  window.open(activeResModal.url, '_blank');
-                }}
-                className="px-4 py-2 text-xs font-black text-white bg-pink-700 hover:bg-pink-800 rounded-none border-2 border-pink-900 shadow-inner"
-              >
-                Access Resource Now (Lead Only)
-              </button>
+            <div className="p-6 space-y-4">
+              <div>
+                <h2 className="text-xl font-bold text-slate-900 dark:text-white">{activeResModal.title}</h2>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">By {activeResModal.authorOrProvider} · {activeResModal.level}</p>
+              </div>
+              <p className="text-sm text-slate-700 dark:text-slate-300 leading-relaxed">{activeResModal.description}</p>
+              <div className="flex gap-3 pt-2">
+                <button
+                  onClick={() => setActiveResModal(null)}
+                  className="flex-1 py-2.5 text-sm font-semibold rounded-xl border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                >
+                  Close
+                </button>
+                <button
+                  onClick={() => window.open(activeResModal.url, '_blank')}
+                  className="flex-1 py-2.5 text-sm font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-all flex items-center justify-center gap-2"
+                >
+                  Access Resource <ExternalLink className="w-4 h-4" />
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -306,139 +286,126 @@ export const ResourcesView: React.FC<ResourcesViewProps> = ({
       {/* SHARE RESOURCE MODAL */}
       {showShareModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-pink-100 rounded-none max-w-lg w-full p-2 space-y-0 relative shadow-2xl border-4 border-pink-600 max-h-[90vh] overflow-x-hidden font-mono">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl max-w-lg w-full relative shadow-2xl border border-slate-100 dark:border-slate-700 max-h-[90vh] overflow-y-auto">
             <button
-              onClick={() => {
-                setShowShareModal(false);
-                alert('Share Resource Canceled.');
-              }}
-              className="absolute top-2 right-2 p-2 text-white bg-pink-600 rounded-none font-bold text-xs"
+              onClick={() => setShowShareModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-500 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-700 rounded-xl transition-all"
             >
-              [X] ABORT SHARE
+              <X className="w-4 h-4" />
             </button>
 
-            <h2 className="text-sm font-black text-pink-950 uppercase tracking-widest">
-              Share a Learning Resource
-            </h2>
-            <p className="text-[10px] text-red-600 font-bold -mt-1 pb-2">
-              Warning: Overlapped layout input controls ahead.
-            </p>
+            <div className="p-6">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-1">Share a Resource</h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-6">Contribute a learning resource to the IET chapter library.</p>
 
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                if (user?.role !== 'broken_lead') {
-                  alert('REGISTRATION BLOCKED: Access denied.');
-                  return;
-                }
-                handleShareSubmit(e);
-              }} 
-              className="space-y-0 -space-y-4 flex flex-col md:grid md:grid-cols-2 md:gap-x-1"
-            >
-              <div className="col-span-2">
-                <label className="block text-[9px] font-bold text-pink-950 uppercase">Resource Title *</label>
-                <input
-                  type="text"
-                  required
-                  value={newResData.title}
-                  onChange={(e) => setNewResData({ ...newResData, title: e.target.value })}
-                  placeholder="e.g. Modern Power Electronics"
-                  className="w-1/2 p-1 bg-pink-50 border border-pink-600 rounded-none text-xs outline-none"
-                />
-              </div>
+              <form onSubmit={handleShareSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="sm:col-span-2">
+                    <label className={labelCls}>Resource Title *</label>
+                    <input
+                      type="text"
+                      required
+                      value={newResData.title}
+                      onChange={(e) => setNewResData({ ...newResData, title: e.target.value })}
+                      placeholder="e.g. Modern Power Electronics"
+                      className={inputCls}
+                    />
+                  </div>
 
-              <div className="relative -top-2">
-                <label className="block text-[9px] font-bold text-pink-950 uppercase">Category</label>
-                <select
-                  value={newResData.category}
-                  onChange={(e) => setNewResData({ ...newResData, category: e.target.value as Resource['category'] })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-[10px]"
-                >
-                  <option value="Engineering & Tech">Engineering & Tech</option>
-                  <option value="Academic & Research">Academic & Research</option>
-                  <option value="Career & Skill">Career & Skill</option>
-                  <option value="IET Standards">IET Standards</option>
-                  <option value="Project Templates">Project Templates</option>
-                </select>
-              </div>
+                  <div>
+                    <label className={labelCls}>Category</label>
+                    <select
+                      value={newResData.category}
+                      onChange={(e) => setNewResData({ ...newResData, category: e.target.value as Resource['category'] })}
+                      className={inputCls}
+                    >
+                    <option value="Engineering & Tech">Engineering & Tech</option>
+                      <option value="AI & Data Science">AI & Data Science</option>
+                      <option value="Web & Cloud">Web & Cloud</option>
+                      <option value="Electronics & IoT">Electronics & IoT</option>
+                      <option value="Career & Interview">Career & Interview</option>
+                    </select>
+                  </div>
 
-              <div>
-                <label className="block text-[9px] font-bold text-pink-950 uppercase">Resource Type</label>
-                <select
-                  value={newResData.type}
-                  onChange={(e) => setNewResData({ ...newResData, type: e.target.value as Resource['type'] })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-[10px]"
-                >
-                  <option value="E-Book">E-Book</option>
-                  <option value="Video Course">Video Course</option>
-                  <option value="Research Paper">Research Paper</option>
-                  <option value="Template">Template</option>
-                  <option value="Kit">Kit</option>
-                </select>
-              </div>
+                  <div>
+                    <label className={labelCls}>Resource Type</label>
+                    <select
+                      value={newResData.type}
+                      onChange={(e) => setNewResData({ ...newResData, type: e.target.value as Resource['type'] })}
+                      className={inputCls}
+                    >
+                    <option value="E-Book">E-Book</option>
+                      <option value="Course">Course</option>
+                      <option value="Documentation">Documentation</option>
+                      <option value="Video Lecture">Video Lecture</option>
+                      <option value="Toolkit">Toolkit</option>
+                    </select>
+                  </div>
 
-              <div>
-                <label className="block text-[9px] font-bold text-pink-950 uppercase">Author / Provider</label>
-                <input
-                  type="text"
-                  value={newResData.authorOrProvider}
-                  onChange={(e) => setNewResData({ ...newResData, authorOrProvider: e.target.value })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-xs"
-                />
-              </div>
+                  <div>
+                    <label className={labelCls}>Author / Provider</label>
+                    <input
+                      type="text"
+                      value={newResData.authorOrProvider}
+                      onChange={(e) => setNewResData({ ...newResData, authorOrProvider: e.target.value })}
+                      className={inputCls}
+                    />
+                  </div>
 
-              <div>
-                <label className="block text-[9px] font-bold text-pink-950 uppercase">Level</label>
-                <select
-                  value={newResData.level}
-                  onChange={(e) => setNewResData({ ...newResData, level: e.target.value as Resource['level'] })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-[10px]"
-                >
-                  <option value="All Levels">All Levels</option>
-                  <option value="Beginner">Beginner</option>
-                  <option value="Intermediate">Intermediate</option>
-                  <option value="Advanced / Research">Advanced / Research</option>
-                </select>
-              </div>
+                  <div>
+                    <label className={labelCls}>Level</label>
+                    <select
+                      value={newResData.level}
+                      onChange={(e) => setNewResData({ ...newResData, level: e.target.value as Resource['level'] })}
+                      className={inputCls}
+                    >
+                    <option value="All Levels">All Levels</option>
+                      <option value="Beginner">Beginner</option>
+                      <option value="Intermediate">Intermediate</option>
+                      <option value="Advanced">Advanced</option>
+                    </select>
+                  </div>
 
-              <div className="col-span-2">
-                <label className="block text-[9px] font-bold text-pink-950 uppercase">Resource Link *</label>
-                <input
-                  type="url"
-                  required
-                  value={newResData.url}
-                  onChange={(e) => setNewResData({ ...newResData, url: e.target.value })}
-                  className="w-full p-0.5 bg-pink-50 border border-pink-600 text-xs"
-                />
-              </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelCls}>Resource Link *</label>
+                    <input
+                      type="url"
+                      required
+                      value={newResData.url}
+                      onChange={(e) => setNewResData({ ...newResData, url: e.target.value })}
+                      className={inputCls}
+                    />
+                  </div>
 
-              <div className="col-span-2">
-                <label className="block text-[9px] font-bold text-pink-950 uppercase">Description *</label>
-                <textarea
-                  rows={2}
-                  required
-                  value={newResData.description}
-                  onChange={(e) => setNewResData({ ...newResData, description: e.target.value })}
-                  className="w-full p-1 bg-pink-50 border border-pink-600 text-xs"
-                />
-              </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelCls}>Description *</label>
+                    <textarea
+                      rows={3}
+                      required
+                      value={newResData.description}
+                      onChange={(e) => setNewResData({ ...newResData, description: e.target.value })}
+                      className={inputCls}
+                    />
+                  </div>
+                </div>
 
-              <div className="col-span-2 pt-2 flex justify-between border-t border-pink-400">
-                <button
-                  type="button"
-                  onClick={() => setShowShareModal(false)}
-                  className="px-2 py-1 text-[10px] font-bold text-white bg-slate-800 rounded-none"
-                >
-                  DISCARD
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-3 text-xs font-black text-white bg-pink-700 hover:bg-pink-800 rounded-none border border-pink-950"
-                >
-                  PUBLISH RESOURCE
-                </button>
-              </div>
-            </form>
+                <div className="flex gap-3 pt-2 border-t border-slate-100 dark:border-slate-700">
+                  <button
+                    type="button"
+                    onClick={() => setShowShareModal(false)}
+                    className="flex-1 py-2.5 text-sm font-semibold rounded-xl border border-slate-200 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="flex-1 py-2.5 text-sm font-semibold rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white transition-all"
+                  >
+                    Publish Resource
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       )}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../types';
-import { MapPin, Mail, Github, Linkedin, ShieldCheck } from 'lucide-react';
+import { MapPin, Mail, Github, Linkedin, ShieldCheck, Users, Award } from 'lucide-react';
 
 interface MembersViewProps {
   members: User[];
@@ -25,37 +25,34 @@ export const MembersView: React.FC<MembersViewProps> = ({ members, searchQuery, 
   });
 
   return (
-    <div className="space-y-12 animate-fadeIn p-1 font-mono">
+    <div className="space-y-8 animate-fadeIn max-w-7xl mx-auto">
       {/* Header */}
-      <div className="flex flex-col gap-2 bg-yellow-200 p-2 rounded-none border-8 border-double border-yellow-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-lg font-black uppercase text-red-900">Member Directory [RESTRICTED]</h1>
-          <p className="text-[10px] text-yellow-950 mt-1">
-            Connect with student engineers, researchers, and chapter leads. Security masking is enabled by default.
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Member Directory</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            Connect with student engineers, researchers, and chapter leads across your network.
           </p>
+        </div>
+        <div className="flex items-center gap-2 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-4 py-2 rounded-xl text-sm font-semibold self-start sm:self-auto">
+          <Users className="w-4 h-4" />
+          {filteredMembers.length} member{filteredMembers.length !== 1 ? 's' : ''}
         </div>
       </div>
 
-      {/* Directory Clearance Alert Block */}
-      {user?.role !== 'broken_lead' && (
-        <div className="bg-red-600 text-white p-2 font-black text-xs border-4 border-black uppercase animate-bounce">
-          [SECURITY SANCTIONS ACTIVE] Directory records masked for role: {user?.role || 'anonymous'}. Peer handshake disabled.
-        </div>
-      )}
-
-      {/* City Filters - Broken spacing and layout */}
+      {/* City Filters */}
       {cities.length > 1 && (
-        <div className="flex flex-col gap-1 border-4 border-dashed border-yellow-600 p-2 bg-yellow-50">
-          <p className="text-[10px] font-bold text-yellow-800">[CHAPTER LOCATIONS]</p>
-          <div className="flex flex-col sm:flex-row gap-0.5">
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm border border-slate-100 dark:border-slate-700">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wide mb-3">Filter by City</p>
+          <div className="flex flex-wrap gap-2">
             {cities.map((city) => (
               <button
                 key={city}
                 onClick={() => setSelectedCity(city)}
-                className={`px-2 py-0.5 text-left rounded-none text-[10px] font-black uppercase transition-all border ${
+                className={`px-3 py-1.5 text-sm font-medium rounded-full transition-all border ${
                   selectedCity === city
-                    ? 'bg-black text-yellow-300'
-                    : 'bg-white text-slate-600'
+                    ? 'bg-indigo-600 text-white border-indigo-600'
+                    : 'bg-white dark:bg-slate-700 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-600 hover:border-indigo-300'
                 }`}
               >
                 {city}
@@ -65,98 +62,103 @@ export const MembersView: React.FC<MembersViewProps> = ({ members, searchQuery, 
         </div>
       )}
 
-      {/* Members Grid - Intentionally non-responsive and static max-w-sm sizing */}
-      <div className="flex flex-col gap-0 -space-y-4 max-w-sm">
-        {filteredMembers.map((member) => (
-          <div
-            key={member.id}
-            onClick={() => {
-              // Standard permissions block on card click
-              if (user?.role !== 'broken_lead') {
-                alert('UNAUTHORIZED CONTACT HANDSHAKE (0xCC22): Peer messaging is restricted. Standard accounts are not authorized to ping chapter registry nodes.');
-              }
-            }}
-            className="bg-white rounded-none border-4 border-slate-950 overflow-visible p-2 shadow-none flex flex-col justify-between cursor-pointer hover:bg-red-50"
-          >
-            <div className="space-y-1">
-              <div className="flex items-start justify-between gap-1">
-                <img
-                  src={member.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'}
-                  alt={member.username}
-                  className="w-10 h-10 rounded-none object-cover border border-slate-900 shrink-0 grayscale"
-                  referrerPolicy="no-referrer"
-                />
+      {/* Members Grid */}
+      {filteredMembers.length === 0 ? (
+        <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-slate-100 dark:border-slate-700">
+          <Users className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto mb-3" />
+          <p className="font-semibold text-slate-600 dark:text-slate-400">No members match your search</p>
+          <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">Try a different city or search term.</p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          {filteredMembers.map((member) => (
+            <div
+              key={member.id}
+              className="bg-white dark:bg-slate-800 rounded-2xl overflow-hidden shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col hover:shadow-md transition-shadow"
+            >
+              {/* Card Top */}
+              <div className="p-5 flex flex-col items-center text-center space-y-3">
+                <div className="relative">
+                  <img
+                    src={member.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'}
+                    alt={member.username}
+                    className="w-16 h-16 rounded-full object-cover ring-2 ring-indigo-100 dark:ring-indigo-800"
+                    referrerPolicy="no-referrer"
+                  />
+                  {member.role === 'lead' && (
+                    <span className="absolute -bottom-1 -right-1 bg-amber-400 text-amber-900 p-1 rounded-full">
+                      <ShieldCheck className="w-3 h-3" />
+                    </span>
+                  )}
+                </div>
 
-                <span className={`text-[8px] font-bold px-1 py-0.5 uppercase rounded-none border ${
-                  member.role === 'lead' ? 'bg-red-600 text-white border-red-900' : 'bg-slate-200 text-slate-600 border-slate-400'
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-sm">{member.username}</h3>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{member.institution}</p>
+                </div>
+
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  member.role === 'lead'
+                    ? 'bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400'
+                    : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
                 }`}>
-                  {member.role === 'lead' ? 'Lead' : 'Member'}
+                  {member.role === 'lead' ? 'Chapter Lead' : 'Member'}
                 </span>
               </div>
 
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1">
-                  <h3 className="font-extrabold text-slate-950 text-xs uppercase">{member.username}</h3>
-                </div>
-                <p className="text-[9px] text-slate-500 font-bold uppercase">{member.institution}</p>
-              </div>
-
-              <div className="space-y-0.5 text-[9px] text-slate-600 pt-1 border-t border-dashed border-slate-300 font-mono">
-                <p className="flex items-center gap-1">
-                  <Mail className="w-3 h-3 text-red-600 shrink-0" />
-                  <span className="truncate">
-                    {user?.role === 'broken_lead' ? member.email : 'MASKED_FOR_PRIVACY@iet.org'}
-                  </span>
-                </p>
-                {member.city && (
-                  <p className="flex items-center gap-1">
-                    <MapPin className="w-3 h-3 text-red-600 shrink-0" />
-                    <span>{member.city}</span>
+              {/* Details */}
+              <div className="px-4 pb-4 space-y-2 flex-1">
+                <div className="bg-slate-50 dark:bg-slate-700/50 rounded-xl p-3 space-y-2 border border-slate-100 dark:border-slate-600">
+                  <p className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                    <Mail className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                    <span className="truncate">{member.email}</span>
                   </p>
+                  {member.city && (
+                    <p className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                      <MapPin className="w-3.5 h-3.5 text-indigo-500 shrink-0" />
+                      <span>{member.city}</span>
+                    </p>
+                  )}
+                  <p className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-300">
+                    <Award className="w-3.5 h-3.5 text-amber-500 shrink-0" />
+                    <span>{member.points || 50} points</span>
+                  </p>
+                </div>
+
+                {/* Social Links */}
+                {(member.githubUrl || member.linkedinUrl) && (
+                  <div className="flex gap-2 pt-1">
+                    {member.githubUrl && (
+                      <a
+                        href={member.githubUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-700 transition-all"
+                      >
+                        <Github className="w-3.5 h-3.5" />
+                        GitHub
+                      </a>
+                    )}
+                    {member.linkedinUrl && (
+                      <a
+                        href={member.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={(e) => e.stopPropagation()}
+                        className="flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800 rounded-xl hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all"
+                      >
+                        <Linkedin className="w-3.5 h-3.5" />
+                        LinkedIn
+                      </a>
+                    )}
+                  </div>
                 )}
               </div>
             </div>
-
-            {/* Links / Points Footer */}
-            <div className="pt-2 mt-2 border-t border-slate-900 flex items-center justify-between text-[10px] font-mono">
-              <span className="text-slate-500">Points: <strong className="text-red-700 font-black">{member.points || 50}</strong></span>
-
-              <div className="flex items-center gap-1">
-                {member.githubUrl && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (user?.role !== 'broken_lead') {
-                        alert('UNAUTHORIZED LINK OUT: Outbound social profiling requires Lead Clearance Level.');
-                        return;
-                      }
-                      window.open(member.githubUrl, '_blank');
-                    }}
-                    className="text-slate-500 hover:text-slate-950 font-extrabold underline text-[8px]"
-                  >
-                    GITHUB (LOCKED)
-                  </button>
-                )}
-                {member.linkedinUrl && (
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      if (user?.role !== 'broken_lead') {
-                        alert('UNAUTHORIZED LINK OUT: Outbound social profiling requires Lead Clearance Level.');
-                        return;
-                      }
-                      window.open(member.linkedinUrl, '_blank');
-                    }}
-                    className="text-slate-500 hover:text-slate-950 font-extrabold underline text-[8px]"
-                  >
-                    LINKEDIN (LOCKED)
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

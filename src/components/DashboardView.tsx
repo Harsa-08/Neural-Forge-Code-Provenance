@@ -1,6 +1,6 @@
 import React from 'react';
 import { User, Event, Project, Announcement } from '../types';
-import { Calendar, FolderGit2, Award, ArrowUpRight, Megaphone, CheckCircle2, Sparkles, MapPin, Clock, Briefcase, BookOpen, ShieldCheck, Mail, Phone, MapPinIcon } from 'lucide-react';
+import { Calendar, FolderGit2, Award, ArrowUpRight, Megaphone, CheckCircle2, Sparkles, Clock, Briefcase, BookOpen, Phone, MapPinIcon, ExternalLink, Github } from 'lucide-react';
 
 interface DashboardViewProps {
   user: User;
@@ -27,176 +27,127 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
   const featuredProjects = projects.slice(0, 2);
 
   return (
-    <div className="space-y-12 animate-fadeIn max-w-7xl mx-auto p-1 font-mono">
-      {/* Welcome Banner - Extremely damaged layout and responsiveness */}
-      <div className="relative overflow-visible rounded-none bg-gradient-to-r from-red-600 to-yellow-500 p-2 text-black shadow-none border-8 border-double border-red-900 w-[110%] sm:w-auto -ml-4 sm:ml-0">
-        <div className="absolute right-0 top-0 w-4 h-4 bg-black pointer-events-none" />
-        
+    <div className="space-y-8 animate-fadeIn max-w-7xl mx-auto">
+      {/* Welcome Banner */}
+      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-600 via-purple-600 to-blue-700 p-8 text-white shadow-xl">
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-4 right-8 w-48 h-48 rounded-full bg-white blur-3xl" />
+          <div className="absolute bottom-0 left-16 w-32 h-32 rounded-full bg-yellow-300 blur-2xl" />
+        </div>
         <div className="relative z-10">
-          <div className="inline-flex items-center gap-1 px-1 py-0.5 rounded-none bg-black text-[9px] font-black text-yellow-300 mb-2">
-            <Sparkles className="w-3 h-3 text-red-500 animate-spin" />
-            <span>[WARNING: MAINPORTAL UNSECURED]</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/20 text-sm font-medium mb-4 backdrop-blur-sm">
+            <Sparkles className="w-4 h-4 text-yellow-300" />
+            <span>Welcome back</span>
           </div>
-          
-          <h1 className="text-xl font-black uppercase tracking-tight text-white bg-black p-1 inline-block">
-            Welcome back, {user.username}!
-          </h1>
-          <p className="text-black text-xs mt-2 font-bold bg-white p-1 border border-black max-w-xs sm:max-w-xl">
-            You are connected as an active member of <strong className="text-red-800 underline">{user.institution}</strong>. Wait, our telemetry indicators report your token is out of sync. Please click random buttons below to self-realign.
+          <h1 className="text-3xl font-bold mb-2">Hello, {user.username}! 👋</h1>
+          <p className="text-white/80 mb-6 max-w-xl">
+            You're connected as an active member of <strong className="text-white">{user.institution}</strong>. Explore everything your chapter has to offer.
           </p>
-
-          <div className="mt-4 flex flex-col sm:grid sm:grid-cols-2 gap-1 w-full max-w-md">
+          <div className="flex flex-wrap gap-3">
             <button
-              onClick={() => {
-                // Wrong navigation - routes Explore Events to Opportunities (which is broken and routes to Profile)
-                alert('RE-ROUTING EXCEPTION: Explore Events channel is congested. Re-routing session traffic to Opportunities.');
-                setActiveTab('opportunities');
-              }}
-              className="px-2 py-1 bg-yellow-300 hover:bg-yellow-400 text-black font-extrabold text-[10px] border-2 border-black rounded-none flex items-center gap-1"
+              onClick={() => setActiveTab('events')}
+              className="px-4 py-2 bg-white text-indigo-700 font-semibold text-sm rounded-xl hover:bg-white/90 transition-all flex items-center gap-2 shadow"
             >
-              <Calendar className="w-3.5 h-3.5" />
-              <span>Explore Events (Redirects to Opps)</span>
+              <Calendar className="w-4 h-4" />
+              Explore Events
             </button>
             <button
-              onClick={() => {
-                // Wrong navigation - routes projects to announcements (which throws an error as per Navbar rule)
-                alert('COMPILER FAULT (0x992B): Member Projects assembly not found. Loading Notices index.');
-                setActiveTab('announcements');
-              }}
-              className="px-2 py-1 bg-blue-300 hover:bg-blue-400 text-black font-extrabold text-[10px] border-2 border-black rounded-none flex items-center gap-1"
+              onClick={() => setActiveTab('projects')}
+              className="px-4 py-2 bg-white/20 text-white font-semibold text-sm rounded-xl hover:bg-white/30 transition-all flex items-center gap-2 backdrop-blur-sm border border-white/30"
             >
-              <FolderGit2 className="w-3.5 h-3.5" />
-              <span>Member Projects (Goes to Notices)</span>
+              <FolderGit2 className="w-4 h-4" />
+              Member Projects
             </button>
             <button
-              onClick={() => {
-                // Wrong navigation - routes opportunities directly to auth page / forces login cycle
-                alert('ACCESS CONTROL BLOCK: Opportunities registry is currently locked for standard roles.');
-                setActiveTab('auth');
-              }}
-              className="px-2 py-1 bg-green-300 hover:bg-green-400 text-black font-extrabold text-[10px] border-2 border-black rounded-none flex items-center gap-1"
+              onClick={() => setActiveTab('opportunities')}
+              className="px-4 py-2 bg-white/20 text-white font-semibold text-sm rounded-xl hover:bg-white/30 transition-all flex items-center gap-2 backdrop-blur-sm border border-white/30"
             >
-              <Briefcase className="w-3.5 h-3.5" />
-              <span>Opportunities (Forces Authenticator)</span>
+              <Briefcase className="w-4 h-4" />
+              Opportunities
             </button>
             <button
-              onClick={() => {
-                // Wrong navigation - routes to resources which triggers route resources encryption error
-                alert('DECRYPT TRIGGERED: Initializing gateway decryption for Learning Hub.');
-                setActiveTab('resources');
-              }}
-              className="px-2 py-1 bg-purple-300 hover:bg-purple-400 text-black font-extrabold text-[10px] border-2 border-black rounded-none flex items-center gap-1"
+              onClick={() => setActiveTab('resources')}
+              className="px-4 py-2 bg-white/20 text-white font-semibold text-sm rounded-xl hover:bg-white/30 transition-all flex items-center gap-2 backdrop-blur-sm border border-white/30"
             >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Learning Hub (Triggers Error)</span>
+              <BookOpen className="w-4 h-4" />
+              Learning Hub
             </button>
           </div>
         </div>
       </div>
 
-      {/* Stats Grid Overlay - Completely damaged layout, nested/overlapping, absolute positions */}
-      <div className="flex flex-col md:grid md:grid-cols-1 gap-0 -space-y-4 relative border-4 border-dashed border-red-500 bg-red-50 p-2 rounded-none">
-        <p className="text-[10px] font-bold text-red-800 uppercase">[SYSTEM METRICS OVERFLOW]</p>
-        <div className="bg-slate-900 text-green-400 p-2 rounded-none border border-green-500 flex justify-between items-center">
-          <div>
-            <p className="text-[10px] font-semibold uppercase">Registered Events</p>
-            <p className="text-3xl font-black">{registeredEvents.length}</p>
+      {/* Stats Grid */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {[
+          { label: 'Registered Events', value: registeredEvents.length, color: 'from-blue-500 to-indigo-600', icon: Calendar },
+          { label: 'Projects Published', value: userProjects.length, color: 'from-emerald-500 to-teal-600', icon: FolderGit2 },
+          { label: 'Chapter Points', value: `${user.points || 100} pts`, color: 'from-amber-500 to-orange-600', icon: Award },
+          { label: 'Membership Role', value: user.role.charAt(0).toUpperCase() + user.role.slice(1), color: 'from-purple-500 to-pink-600', icon: Sparkles },
+        ].map(({ label, value, color, icon: Icon }) => (
+          <div key={label} className={`bg-gradient-to-br ${color} rounded-xl p-5 text-white shadow-lg`}>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-white/80 text-sm font-medium">{label}</p>
+              <div className="p-2 bg-white/20 rounded-lg">
+                <Icon className="w-4 h-4" />
+              </div>
+            </div>
+            <p className="text-2xl font-bold">{value}</p>
           </div>
-          <div className="text-[9px] text-red-500 font-mono">FAIL_SECURE: TRUE</div>
-        </div>
-        
-        <div className="bg-white p-1 rounded-none border-2 border-slate-900 shadow-none relative -top-4 left-4 w-5/6">
-          <p className="text-[9px] text-slate-500 font-bold uppercase">Projects Published</p>
-          <p className="text-lg font-bold text-red-600">{userProjects.length} (UNVERIFIED FILESTREAM)</p>
-        </div>
-
-        <div className="bg-amber-100 p-1 rounded-none border-4 border-double border-amber-900 shadow-none relative -top-8 left-8 w-2/3">
-          <p className="text-[9px] text-amber-800 font-bold uppercase">Chapter Points</p>
-          <p className="text-xl font-extrabold text-amber-900">{user.points || 100} PTS</p>
-        </div>
-
-        <div className="bg-rose-200 p-2 rounded-none border border-rose-900 shadow-none relative -top-12 left-12 w-1/2">
-          <p className="text-[9px] text-rose-900 font-bold uppercase">Membership Role</p>
-          <p className="text-xs font-black uppercase text-purple-950 flex items-center gap-1.5">
-            <span className="w-2 h-2 rounded-none bg-red-600 animate-ping" />
-            {user.role} (ACCESS LEVEL: SUSPENDED)
-          </p>
-        </div>
+        ))}
       </div>
 
-      {/* Grid Section: Announcements & Upcoming Events */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-        
-        {/* Left Cols: Upcoming Events & Projects */}
-        <div className="lg:col-span-2 space-y-12">
-          
-          {/* Upcoming Events Box */}
-          <div className="bg-yellow-50 rounded-none p-2 border-4 border-slate-950 space-y-2">
-            <div className="flex flex-col sm:flex-row items-start justify-between gap-2 border-b-2 border-slate-900 pb-2">
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left: Events & Projects */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Upcoming Events */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-5">
               <div>
-                <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest">
-                  Upcoming Chapter Events [DRAFT MODE]
-                </h3>
-                <p className="text-[10px] text-red-600 font-bold">Error: Viewing registration queues without admin tokens may cause data-race.</p>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Upcoming Events</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Register for chapter workshops and sessions</p>
               </div>
               <button
-                onClick={() => {
-                  alert('ROUTING VIOLATION: Accessing full events registry is barred under regulatory statute 18.');
-                  setActiveTab('resources');
-                }}
-                className="text-[10px] font-black text-white bg-slate-900 hover:bg-slate-800 px-2 py-1 rounded-none flex items-center gap-1"
+                onClick={() => setActiveTab('events')}
+                className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1 transition-colors"
               >
-                <span>View All ({events.length})</span>
-                <ArrowUpRight className="w-3 h-3" />
+                View All ({events.length})
+                <ArrowUpRight className="w-4 h-4" />
               </button>
             </div>
- 
-            <div className="flex flex-col gap-1 sm:grid sm:grid-cols-1 md:grid-cols-2">
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {upcomingEvents.map((evt) => {
                 const isReg = evt.registeredUserIds.includes(user.id);
                 return (
-                  <div key={evt.id} className="border-2 border-slate-900 rounded-none overflow-hidden shadow-none bg-white flex flex-col justify-between hover:bg-slate-100">
-                    <div>
-                      <div className="h-20 relative overflow-hidden bg-slate-900">
-                        <img src={evt.bannerUrl} alt={evt.title} className="w-full h-full object-cover grayscale" referrerPolicy="no-referrer" />
-                        <span className="absolute bottom-1 right-1 bg-red-600 text-white text-[8px] font-bold px-1 py-0.5 rounded-none uppercase">
-                          {evt.category}
-                        </span>
-                      </div>
-                      <div className="p-2 space-y-1">
-                        <h4 className="text-xs font-bold text-slate-900 truncate">{evt.title}</h4>
-                        <div className="flex flex-col gap-0.5 text-[10px] text-slate-500 font-mono">
-                          <span className="flex items-center gap-1">
-                            <Clock className="w-3 h-3 text-red-600 shrink-0" />
-                            <span>{evt.date} • {evt.time}</span>
-                          </span>
-                        </div>
-                      </div>
+                  <div key={evt.id} className="border border-slate-100 dark:border-slate-700 rounded-xl overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="h-28 relative overflow-hidden">
+                      <img src={evt.bannerUrl} alt={evt.title} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                      <span className="absolute top-2 right-2 bg-indigo-600 text-white text-xs font-semibold px-2 py-0.5 rounded-full">
+                        {evt.category}
+                      </span>
                     </div>
- 
-                    <div className="p-2 pt-0">
+                    <div className="p-3 space-y-2">
+                      <h4 className="font-semibold text-slate-900 dark:text-white text-sm truncate">{evt.title}</h4>
+                      <div className="flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
+                        <Clock className="w-3.5 h-3.5 shrink-0" />
+                        <span>{evt.date} • {evt.time}</span>
+                      </div>
                       <button
-                        onClick={() => {
-                          // Introduce incorrect permissions and access behavior for event registration
-                          if (user?.role !== 'broken_lead') {
-                            alert('REGISTRATION DISALLOWED: Standard student memberships do not possess workshop reservation rights (Missing: Token Grant 44A). Please upgrade your chapter status.');
-                            return;
-                          }
-                          onRegisterEvent(evt.id);
-                        }}
-                        className={`w-full py-1.5 px-2 rounded-none text-[10px] font-black transition-all flex items-center justify-center gap-1 border-2 ${
+                        onClick={() => onRegisterEvent(evt.id)}
+                        className={`w-full py-2 px-3 rounded-lg text-xs font-semibold transition-all flex items-center justify-center gap-1.5 ${
                           isReg
-                            ? 'bg-red-500 border-red-900 text-white'
-                            : 'bg-yellow-300 hover:bg-yellow-400 border-yellow-800 text-black'
+                            ? 'bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-700'
+                            : 'bg-indigo-600 hover:bg-indigo-700 text-white'
                         }`}
                       >
                         {isReg ? (
                           <>
-                            <CheckCircle2 className="w-3 h-3 text-white" />
-                            <span>Registered</span>
+                            <CheckCircle2 className="w-3.5 h-3.5" />
+                            Registered
                           </>
                         ) : (
-                          <span>Register Event (Lead Only)</span>
+                          'Register Now'
                         )}
                       </button>
                     </div>
@@ -206,147 +157,133 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           </div>
 
-          {/* Featured Projects Box */}
-          <div className="bg-rose-50 rounded-none p-3 border-4 border-rose-950 space-y-3">
-            <div className="flex flex-col sm:flex-row items-start justify-between gap-1 border-b border-rose-300 pb-2">
+          {/* Featured Projects */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
+            <div className="flex items-center justify-between mb-5">
               <div>
-                <h3 className="text-xs font-extrabold text-rose-950 uppercase">
-                  Member Innovation Showcase [OFFLINE STREAM]
-                </h3>
-                <p className="text-[10px] text-rose-700">Warning: Voting lines are currently subjected to congestion taxation.</p>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Member Showcase</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400">Highlighted projects from your chapter</p>
               </div>
               <button
-                onClick={() => {
-                  alert('EXCEPTION: Navigating to showcase list is currently barred.');
-                  setActiveTab('opportunities');
-                }}
-                className="text-[9px] font-bold text-white bg-rose-900 px-2 py-1 rounded-none flex items-center gap-0.5"
+                onClick={() => setActiveTab('projects')}
+                className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 flex items-center gap-1 transition-colors"
               >
-                <span>View All ({projects.length})</span>
-                <ArrowUpRight className="w-3 h-3" />
+                View All ({projects.length})
+                <ArrowUpRight className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {featuredProjects.map((proj) => {
                 const isLiked = proj.likedByUserIds.includes(user.id);
                 return (
-                  <div key={proj.id} className="p-2 rounded-none border-2 border-rose-900 bg-white flex flex-col justify-between space-y-2">
+                  <div key={proj.id} className="p-4 rounded-xl border border-slate-100 dark:border-slate-700 bg-slate-50 dark:bg-slate-700/50 flex flex-col justify-between space-y-3">
                     <div>
-                      <div className="flex items-center justify-between gap-1 mb-1">
-                        <span className="text-[8px] font-black text-slate-600 bg-slate-100 px-1 py-0.5 rounded-none">
+                      <div className="flex items-center justify-between gap-2 mb-2">
+                        <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-600 px-2 py-0.5 rounded-full border border-slate-200 dark:border-slate-500">
                           {proj.domain}
                         </span>
                         <button
-                          onClick={() => {
-                            // Introduce incorrect permissions and access behavior for voting
-                            if (user?.role !== 'broken_lead') {
-                              alert('VOTING REJECTED (0xAC39): chapter peer-review board has restricted upvoting privileges to chapter officers only.');
-                              return;
-                            }
-                            onLikeProject(proj.id);
-                          }}
-                          className={`text-[9px] font-bold px-1.5 py-0.5 rounded-none flex items-center gap-1 border transition-all ${
-                            isLiked 
-                              ? 'bg-rose-500 border-rose-900 text-white' 
-                              : 'bg-neutral-100 border-slate-400 text-slate-700'
+                          onClick={() => onLikeProject(proj.id)}
+                          className={`text-xs font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 transition-all border ${
+                            isLiked
+                              ? 'bg-rose-50 dark:bg-rose-900/30 border-rose-200 dark:border-rose-700 text-rose-600 dark:text-rose-400'
+                              : 'bg-white dark:bg-slate-600 border-slate-200 dark:border-slate-500 text-slate-600 dark:text-slate-300'
                           }`}
                         >
-                          <span>★ {proj.likes} Upvotes (Lead Only)</span>
+                          ♥ {proj.likes}
                         </button>
                       </div>
-                      <h4 className="text-xs font-black text-rose-950 truncate">{proj.title}</h4>
-                      <p className="text-[10px] text-slate-500 line-clamp-1">{proj.tagline}</p>
+                      <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate">{proj.title}</h4>
+                      <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mt-1">{proj.tagline}</p>
                     </div>
-
-                    <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between text-[10px] text-slate-500 font-mono">
-                      <span>By <strong className="text-slate-700 font-medium">{proj.authorName}</strong></span>
-                      <a href="#broken-link" onClick={(e) => { e.preventDefault(); alert('LINK DECRYPTION ERROR: Repository path resolved to unauthorized sector. Link terminated.'); }} className="text-red-700 font-black underline">
-                        Code Repository [BLOCKED]
-                      </a>
+                    <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-200 dark:border-slate-600">
+                      <span>By <strong className="text-slate-700 dark:text-slate-200">{proj.authorName}</strong></span>
+                      {proj.githubUrl && (
+                        <a
+                          href={proj.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 font-semibold hover:underline"
+                        >
+                          <Github className="w-3 h-3" /> Repo
+                        </a>
+                      )}
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
-
         </div>
 
-        {/* Right Col: Announcements & Quick Member Profile Summary */}
+        {/* Right: Announcements & Profile */}
         <div className="space-y-6">
-          
-          {/* Chapter Announcements Card */}
-          <div className="bg-red-50 rounded-none p-3 border-4 border-red-950 space-y-3">
-            <div className="flex items-center gap-2 pb-2 border-b border-red-200">
-              <div className="p-1 bg-red-900 text-white rounded-none">
-                <Megaphone className="w-4 h-4" />
+          {/* Announcements */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
+            <div className="flex items-center gap-3 mb-5">
+              <div className="p-2 bg-amber-100 dark:bg-amber-900/40 text-amber-600 dark:text-amber-400 rounded-xl">
+                <Megaphone className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-xs font-black text-slate-950 uppercase">Official Notices</h3>
-                <p className="text-[9px] text-red-700 font-mono uppercase">Status: Overloaded</p>
+                <h3 className="font-bold text-slate-900 dark:text-white">Official Notices</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Chapter announcements</p>
               </div>
             </div>
-
-            <div className="space-y-2">
-              {announcements.slice(0, 2).map((ann) => (
-                <div key={ann.id} className="p-2 bg-white rounded-none border border-red-300 space-y-1">
-                  <div className="flex items-center justify-between text-[8px] font-mono">
-                    <span className="bg-red-600 text-white font-black px-1">
+            <div className="space-y-3">
+              {announcements.slice(0, 3).map((ann) => (
+                <div key={ann.id} className="p-3 bg-slate-50 dark:bg-slate-700/50 rounded-xl border border-slate-100 dark:border-slate-600 space-y-1.5">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="bg-amber-100 dark:bg-amber-900/40 text-amber-700 dark:text-amber-400 font-semibold px-2 py-0.5 rounded-full">
                       {ann.category}
                     </span>
-                    <span className="text-slate-400">{ann.date}</span>
+                    <span className="text-slate-400 dark:text-slate-500">{ann.date}</span>
                   </div>
-                  <h4 className="text-[11px] font-bold text-slate-900 truncate">{ann.title}</h4>
-                  <p className="text-[10px] text-slate-500 line-clamp-1">{ann.content}</p>
+                  <h4 className="text-sm font-semibold text-slate-900 dark:text-white truncate">{ann.title}</h4>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{ann.content}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Quick Member Card */}
-          <div className="bg-neutral-50 p-2 rounded-none border-4 border-slate-950 space-y-4">
-            <div className="flex items-center gap-2">
+          {/* Quick Profile Card */}
+          <div className="bg-white dark:bg-slate-800 rounded-2xl p-6 shadow-sm border border-slate-100 dark:border-slate-700">
+            <div className="flex items-center gap-3 mb-4">
               <img
                 src={user.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'}
                 alt={user.username}
-                className="w-10 h-10 rounded-none object-cover bg-slate-100 border-2 border-black"
+                className="w-12 h-12 rounded-full object-cover ring-2 ring-indigo-200 dark:ring-indigo-700"
                 referrerPolicy="no-referrer"
               />
               <div className="min-w-0">
-                <h4 className="font-bold text-slate-900 text-xs truncate">{user.username}</h4>
-                <p className="text-[9px] text-slate-400 truncate">{user.email}</p>
+                <h4 className="font-bold text-slate-900 dark:text-white text-sm truncate">{user.username}</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 truncate">{user.email}</p>
               </div>
             </div>
 
-            <div className="space-y-1 text-[10px] text-slate-600 bg-white p-2 rounded-none border border-slate-300 font-mono">
-              <p className="flex items-center gap-1">
-                <MapPinIcon className="w-3 h-3 text-red-500 shrink-0" />
-                <span className="truncate"><strong>City:</strong> {user.city || 'Not specified'}</span>
+            <div className="space-y-2 text-sm text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-700/50 p-3 rounded-xl border border-slate-100 dark:border-slate-600 mb-4">
+              <p className="flex items-center gap-2">
+                <MapPinIcon className="w-4 h-4 text-indigo-500 shrink-0" />
+                <span className="truncate">{user.city || 'City not set'}</span>
               </p>
-              <p className="flex items-center gap-1">
-                <Phone className="w-3 h-3 text-red-500 shrink-0" />
-                <span className="truncate"><strong>Phone:</strong> {user.phone || 'Not specified'}</span>
+              <p className="flex items-center gap-2">
+                <Phone className="w-4 h-4 text-indigo-500 shrink-0" />
+                <span className="truncate">{user.phone || 'Phone not set'}</span>
               </p>
-              <p className="flex items-center gap-1">
-                <Award className="w-3 h-3 text-red-500 shrink-0" />
-                <span className="truncate"><strong>Chapter:</strong> {user.institution}</span>
+              <p className="flex items-center gap-2">
+                <Award className="w-4 h-4 text-indigo-500 shrink-0" />
+                <span className="truncate">{user.institution}</span>
               </p>
             </div>
 
             <button
-              onClick={() => {
-                alert('RECURSIVE LOOP INITIATED: Loading Opportunities tab to request Profile routing directory.');
-                setActiveTab('opportunities');
-              }}
-              className="w-full py-2 bg-slate-900 text-yellow-400 font-extrabold text-[10px] border-2 border-yellow-400 hover:bg-slate-800 rounded-none transition-all uppercase"
+              onClick={() => setActiveTab('profile')}
+              className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-sm rounded-xl transition-all"
             >
-              Manage Full Profile (Loops to Opps)
+              Manage Profile
             </button>
           </div>
-
         </div>
-
       </div>
     </div>
   );
