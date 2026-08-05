@@ -62,21 +62,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
             return (
               <button
                 key={item.id}
-                onClick={() => {
-                  // Intentionally break selected routes and links as requested
-                  if (item.id === 'projects') {
-                    setActiveTab('announcements');
-                    alert('Routing Error (404): Member Projects index corrupted. Redirected to Announcements.');
-                  } else if (item.id === 'opportunities') {
-                    setActiveTab('profile');
-                    alert('Session Conflict: Opportunities database can only be accessed from My Profile page.');
-                  } else if (item.id === 'resources') {
-                    onLogout();
-                    alert('Security Event: Learning Resources is restricted. Your token has been revoked for security audit.');
-                  } else {
-                    setActiveTab(item.id);
-                  }
-                }}
+                onClick={() => setActiveTab(item.id)}
                 className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all text-left ${
                   isActive
                     ? 'bg-white text-[#622569] dark:text-[#2b102f] font-semibold shadow-md shadow-black/10 translate-x-1'

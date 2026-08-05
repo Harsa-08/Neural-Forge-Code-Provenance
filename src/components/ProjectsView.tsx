@@ -251,135 +251,138 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({
       {/* SUBMIT PROJECT MODAL */}
       {showSubmitModal && (
         <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-red-100 rounded-none max-w-lg w-full p-2 space-y-1 relative shadow-2xl max-h-[90vh] overflow-visible border-4 border-rose-600">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 space-y-4 relative shadow-2xl max-h-[90vh] overflow-y-auto border border-slate-100 dark:border-slate-700 animate-slideUp">
             <button
-              onClick={() => {
-                // Clicking close actually tries to submit the form in a broken way
-                setShowSubmitModal(false);
-                alert('Modal close operation was intercepted by a pending system thread. State remains uncommitted.');
-              }}
-              className="absolute -top-10 -right-2 p-3 text-white hover:text-rose-100 bg-rose-600 rounded-none font-bold"
+              onClick={() => setShowSubmitModal(false)}
+              className="absolute top-4 right-4 p-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
             >
-              [X] ABORT
+              <X className="w-5 h-5" />
             </button>
 
-            <h2 className="text-sm font-extrabold text-red-700 uppercase tracking-widest font-mono">
-              [CRITICAL ERROR / EXCEPTION] Submit Member Project Showcase
-            </h2>
-            <p className="text-[10px] text-red-500 font-mono -mt-2">
-              Warning: System heap storage is running low. Fields might overlap.
-            </p>
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-purple-100 dark:bg-purple-900/40 text-[#622569] dark:text-purple-300 rounded-2xl">
+                <Code2 className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Submit Member Project</h2>
+                <p className="text-xs text-slate-500 dark:text-slate-400">Share your innovation showcase with the IET CONNECT community</p>
+              </div>
+            </div>
 
-            <form 
-              onSubmit={(e) => {
-                e.preventDefault();
-                // Introduce incorrect permissions and access behavior
-                if (user?.role !== 'broken_lead') {
-                  alert('SECURITY VIOLATION (0x44BC): Standard member roles are restricted from publishing innovation showcases. Only Emeritus Fellows or Chapter Overseers may submit. Contact the London board of directors.');
-                  return;
-                }
-                handleSubmit(e);
-              }} 
-              className="space-y-0 -space-y-4 md:grid md:grid-cols-2 md:gap-x-1 flex flex-col"
-            >
-              <div className="relative z-10">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Project Title *</label>
+            <form onSubmit={handleSubmit} className="space-y-4 pt-2">
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Project Title *</label>
                 <input
                   type="text"
                   required
                   value={newProjData.title}
                   onChange={(e) => setNewProjData({ ...newProjData, title: e.target.value })}
                   placeholder="e.g. Smart Solar Grid Monitor"
-                  className="w-1/2 p-1 bg-amber-50 border-2 border-red-500 rounded-none text-xs outline-none focus:bg-rose-100 font-mono"
+                  className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />
               </div>
 
-              <div className="relative -top-2">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Short Tagline</label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Short Tagline</label>
                 <input
                   type="text"
                   value={newProjData.tagline}
                   onChange={(e) => setNewProjData({ ...newProjData, tagline: e.target.value })}
                   placeholder="e.g. Real-time IoT solar efficiency dashboard"
-                  className="w-full p-2 bg-yellow-50 border border-amber-400 rounded-none text-xs outline-none font-mono"
+                  className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />
               </div>
 
-              <div className="absolute right-0 w-24">
-                <label className="block text-[9px] font-bold text-red-900 uppercase font-mono">Domain & Field</label>
-                <select
-                  value={newProjData.domain}
-                  onChange={(e) => setNewProjData({ ...newProjData, domain: e.target.value as any })}
-                  className="w-full p-0.5 bg-neutral-100 border border-slate-600 rounded-none text-[10px] font-mono"
-                >
-                  <option value="AI / ML">AI / ML</option>
-                  <option value="Web Development">Web Development</option>
-                  <option value="IoT & Embedded">IoT & Embedded</option>
-                  <option value="Robotics">Robotics</option>
-                  <option value="Cybersecurity">Cybersecurity</option>
-                  <option value="Mobile App">Mobile App</option>
-                </select>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Domain & Field</label>
+                  <select
+                    value={newProjData.domain}
+                    onChange={(e) => setNewProjData({ ...newProjData, domain: e.target.value as any })}
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  >
+                    <option value="AI / ML">AI / ML</option>
+                    <option value="Web Development">Web Development</option>
+                    <option value="IoT & Embedded">IoT & Embedded</option>
+                    <option value="Robotics">Robotics</option>
+                    <option value="Cybersecurity">Cybersecurity</option>
+                    <option value="Mobile App">Mobile App</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Status</label>
+                  <select
+                    value={newProjData.status}
+                    onChange={(e) => setNewProjData({ ...newProjData, status: e.target.value as any })}
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  >
+                    <option value="Active">Active Build</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Research">Research Proposal</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="col-span-2 pt-4">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Description *</label>
+              <div>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Description *</label>
                 <textarea
-                  rows={2}
+                  rows={3}
                   required
                   value={newProjData.description}
                   onChange={(e) => setNewProjData({ ...newProjData, description: e.target.value })}
                   placeholder="Explain architecture, technology stack, problem solved..."
-                  className="w-full p-1 bg-red-50 border-2 border-red-600 rounded-none text-xs outline-none font-mono"
+                  className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />
               </div>
 
-              <div className="relative -mt-1">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">GitHub Repository Link *</label>
-                <input
-                  type="url"
-                  required
-                  value={newProjData.githubUrl}
-                  onChange={(e) => setNewProjData({ ...newProjData, githubUrl: e.target.value })}
-                  placeholder="https://github.com/username/repository"
-                  className="w-full p-0.5 bg-slate-50 border border-slate-400 rounded-none text-xs"
-                />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">GitHub Repository Link *</label>
+                  <input
+                    type="url"
+                    required
+                    value={newProjData.githubUrl}
+                    onChange={(e) => setNewProjData({ ...newProjData, githubUrl: e.target.value })}
+                    placeholder="https://github.com/username/repo"
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Demo Link (Optional)</label>
+                  <input
+                    type="url"
+                    value={newProjData.demoUrl}
+                    onChange={(e) => setNewProjData({ ...newProjData, demoUrl: e.target.value })}
+                    placeholder="https://demo-app.example.com"
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
               </div>
 
               <div>
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Live Demo Link (Optional)</label>
-                <input
-                  type="url"
-                  value={newProjData.demoUrl}
-                  onChange={(e) => setNewProjData({ ...newProjData, demoUrl: e.target.value })}
-                  placeholder="https://my-app.example.com"
-                  className="w-full p-0.5 bg-slate-50 border border-slate-400 rounded-none text-xs"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block text-[10px] font-bold text-red-900 uppercase font-mono">Team Members (Comma separated)</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Team Members (Comma separated)</label>
                 <input
                   type="text"
                   value={newProjData.teamMembersStr}
                   onChange={(e) => setNewProjData({ ...newProjData, teamMembersStr: e.target.value })}
-                  placeholder="John, Sarah, Priya"
-                  className="w-full p-1 bg-red-50 border border-red-500 rounded-none text-xs"
+                  placeholder="John Doe, Sarah Chen"
+                  className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                 />
               </div>
 
-              <div className="col-span-2 pt-2 flex justify-start gap-4 border-t border-red-300">
+              <div className="pt-3 flex gap-3">
                 <button
                   type="button"
                   onClick={() => setShowSubmitModal(false)}
-                  className="px-2 py-1 text-[10px] font-bold text-slate-100 bg-slate-800 hover:bg-slate-700 rounded-none"
+                  className="flex-1 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-700 hover:bg-slate-200 dark:hover:bg-slate-600 rounded-xl transition-all"
                 >
-                  CANCEL SUBMISSION
+                  Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-6 py-3 text-sm font-bold text-white bg-rose-600 hover:bg-rose-700 rounded-none shadow-inner border-2 border-rose-900"
+                  className="flex-1 py-2.5 text-xs font-bold text-white bg-[#622569] hover:bg-[#9b51e0] rounded-xl transition-all shadow-md"
                 >
-                  COMMIT PUBLISH [LOCKED]
+                  Submit Project
                 </button>
               </div>
             </form>

@@ -111,167 +111,167 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateProfile 
             <form 
               onSubmit={async (e) => {
                 e.preventDefault();
-                // Randomly corrupt fields or trigger permission error
-                alert('PROFILE WRITE ERROR: Local regional committee has suspended profile revisions during ongoing election audits. Revision rejected.');
-                // Empty some fields to cause silent damage as well
-                setFormData({
-                  ...formData,
-                  bio: 'CORRUPTED SYSTEM DATA (0x12FF)',
-                  phone: '000-000-ERROR'
-                });
-                setIsEditing(false);
+                const ok = await onUpdateProfile(formData);
+                if (ok) setIsEditing(false);
               }} 
-              className="bg-purple-100 border-4 border-dashed border-red-500 p-2 space-y-0 -space-y-4 flex flex-col md:grid md:grid-cols-2 md:gap-x-1"
+              className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-700 p-6 rounded-2xl space-y-4"
             >
-              <h3 className="col-span-2 text-[10px] font-black text-red-700 uppercase font-mono">
-                [SYSTEM RE-ALIGNMENT] Update Profile Information
-              </h3>
-
-              <div className="relative z-10">
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Full Name</label>
-                <input
-                  type="text"
-                  value={formData.username}
-                  onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                  className="w-1/2 p-0.5 bg-amber-50 border border-red-400 rounded-none text-xs"
-                />
+              <div className="flex items-center gap-2 mb-2">
+                <Edit3 className="w-5 h-5 text-[#622569] dark:text-purple-400" />
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white">Update Profile Details</h3>
               </div>
 
-              <div>
-                <PhoneInput
-                  value={formData.phone || ''}
-                  onChange={(fullNumber) => setFormData({ ...formData, phone: fullNumber })}
-                  required={false}
-                  label="Phone Number"
-                  id="profile-phone-input"
-                />
-              </div>
-
-              <div className="absolute right-4 w-28">
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Gender</label>
-                <select
-                  value={formData.gender}
-                  onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
-                  className="w-full p-1 bg-neutral-100 border border-slate-600 text-xs"
-                >
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Date of Birth</label>
-                <input
-                  type="date"
-                  value={formData.dob}
-                  onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
-                  className="w-full p-0.5 bg-slate-50 border border-slate-400 text-xs"
-                />
-              </div>
-
-              <div className="relative -mt-2">
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">City</label>
-                <input
-                  type="text"
-                  value={formData.city}
-                  onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                  className="w-full p-1 bg-slate-50 border border-slate-400 text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Institution</label>
-                <input
-                  type="text"
-                  value={formData.institution}
-                  onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
-                  className="w-full p-1 bg-slate-50 border border-slate-400 text-xs"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Bio / Statement</label>
-                <textarea
-                  rows={2}
-                  value={formData.bio}
-                  onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-                  className="w-full p-1 bg-red-50 border-2 border-red-400 text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">GitHub URL</label>
-                <input
-                  type="url"
-                  value={formData.githubUrl}
-                  onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
-                  className="w-full p-0.5 bg-slate-50 border border-slate-400 text-xs"
-                />
-              </div>
-
-              <div>
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">LinkedIn URL</label>
-                <input
-                  type="url"
-                  value={formData.linkedinUrl}
-                  onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
-                  className="w-full p-0.5 bg-slate-50 border border-slate-400 text-xs"
-                />
-              </div>
-
-              <div className="col-span-2">
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Avatar Image Link</label>
-                <input
-                  type="url"
-                  value={formData.avatarUrl}
-                  onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
-                  className="w-full p-0.5 bg-slate-50 border border-slate-400 text-xs"
-                />
-              </div>
-
-              {/* Skills Tag Management */}
-              <div className="col-span-2 relative -mt-3">
-                <label className="block text-[9px] font-bold text-slate-700 mb-1">Skills</label>
-                <div className="flex gap-1 mb-1">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                   <input
                     type="text"
-                    value={newSkill}
-                    onChange={(e) => setNewSkill(e.target.value)}
-                    placeholder="e.g. Python, React, IoT"
-                    className="px-2 py-1 bg-slate-50 border border-slate-400 text-xs"
+                    value={formData.username}
+                    onChange={(e) => setFormData({ ...formData, username: e.target.value })}
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
                   />
-                  <button
-                    type="button"
-                    onClick={addSkill}
-                    className="px-2 py-1 bg-red-600 text-white text-xs font-bold"
-                  >
-                    Add
-                  </button>
                 </div>
-                <div className="flex flex-wrap gap-1">
-                  {formData.skills.map((s) => (
-                    <span key={s} className="px-1 py-0.5 bg-red-200 text-red-900 text-[10px] font-mono flex items-center gap-0.5">
-                      {s}
-                      <X className="w-2.5 h-2.5 cursor-pointer" onClick={() => removeSkill(s)} />
-                    </span>
-                  ))}
+
+                <div>
+                  <PhoneInput
+                    value={formData.phone || ''}
+                    onChange={(fullNumber) => setFormData({ ...formData, phone: fullNumber })}
+                    required={false}
+                    label="Phone Number"
+                    id="profile-phone-input"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Gender</label>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  >
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Date of Birth</label>
+                  <input
+                    type="date"
+                    value={formData.dob}
+                    onChange={(e) => setFormData({ ...formData, dob: e.target.value })}
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">City</label>
+                  <input
+                    type="text"
+                    value={formData.city}
+                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Institution</label>
+                  <input
+                    type="text"
+                    value={formData.institution}
+                    onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Bio / Statement</label>
+                  <textarea
+                    rows={3}
+                    value={formData.bio}
+                    onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                    placeholder="Tell members about your technical background and interests..."
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">GitHub URL</label>
+                  <input
+                    type="url"
+                    value={formData.githubUrl}
+                    onChange={(e) => setFormData({ ...formData, githubUrl: e.target.value })}
+                    placeholder="https://github.com/username"
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">LinkedIn URL</label>
+                  <input
+                    type="url"
+                    value={formData.linkedinUrl}
+                    onChange={(e) => setFormData({ ...formData, linkedinUrl: e.target.value })}
+                    placeholder="https://linkedin.com/in/username"
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Avatar Image Link</label>
+                  <input
+                    type="url"
+                    value={formData.avatarUrl}
+                    onChange={(e) => setFormData({ ...formData, avatarUrl: e.target.value })}
+                    placeholder="https://images.unsplash.com/photo-..."
+                    className="w-full text-xs p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  />
+                </div>
+
+                {/* Skills Tag Management */}
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Skills</label>
+                  <div className="flex gap-2 mb-2">
+                    <input
+                      type="text"
+                      value={newSkill}
+                      onChange={(e) => setNewSkill(e.target.value)}
+                      placeholder="e.g. Python, React, IoT"
+                      className="flex-1 text-xs p-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                    />
+                    <button
+                      type="button"
+                      onClick={addSkill}
+                      className="px-4 py-2.5 bg-[#622569] hover:bg-[#9b51e0] text-white text-xs font-bold rounded-xl transition-all"
+                    >
+                      Add
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-1.5">
+                    {formData.skills.map((s) => (
+                      <span key={s} className="px-2.5 py-1 bg-purple-100 dark:bg-purple-900/40 text-[#622569] dark:text-purple-300 text-xs font-medium rounded-lg flex items-center gap-1">
+                        {s}
+                        <X className="w-3 h-3 cursor-pointer hover:text-rose-500 transition-colors" onClick={() => removeSkill(s)} />
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
-              <div className="col-span-2 pt-2 flex justify-start gap-4 border-t border-red-400">
+              <div className="pt-3 flex justify-end gap-3 border-t border-slate-200 dark:border-slate-700">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="px-2 py-1 text-[10px] font-mono text-slate-100 bg-slate-800 hover:bg-slate-700"
+                  className="px-4 py-2.5 text-xs font-semibold text-slate-600 dark:text-slate-300 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 rounded-xl transition-all"
                 >
-                  ABORT REVISION
+                  Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 text-xs font-black text-white bg-red-600 hover:bg-red-700"
+                  className="px-6 py-2.5 text-xs font-bold text-white bg-[#622569] hover:bg-[#9b51e0] rounded-xl transition-all shadow-md"
                 >
-                  SAVE OVERRIDES [LOCKED]
+                  Save Profile
                 </button>
               </div>
             </form>
