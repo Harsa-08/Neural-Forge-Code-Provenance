@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../types';
-import { ShieldCheck, LogOut, Search, Bell, Sparkles, User as UserIcon, Menu, X, AlertCircle } from 'lucide-react';
+import { ShieldCheck, LogOut, Search, Bell, Sparkles, User as UserIcon, Menu, X, AlertCircle, Sun, Moon } from 'lucide-react';
 
 interface NavbarProps {
   user: User | null;
@@ -9,6 +9,8 @@ interface NavbarProps {
   onLogout: () => void;
   searchQuery: string;
   setSearchQuery: (query: string) => void;
+  isDarkMode?: boolean;
+  toggleDarkMode?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -18,6 +20,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onLogout,
   searchQuery,
   setSearchQuery,
+  isDarkMode = false,
+  toggleDarkMode,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [navError, setNavError] = useState<string | null>(null);
@@ -52,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   };
 
   return (
-    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 lg:px-8 py-4 flex items-center justify-between gap-4 shadow-sm">
+    <header className="sticky top-0 z-30 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200/80 dark:border-slate-800 px-4 lg:px-8 py-4 flex items-center justify-between gap-4 shadow-sm transition-colors duration-200">
       {/* Brand & Mobile Title */}
       <div className="flex items-center gap-3">
         {/* Mobile Hamburger menu - deliberate mobile navigation breaks */}
@@ -67,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               setMobileMenuOpen(!mobileMenuOpen);
             }
           }}
-          className="p-2 -ml-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 md:hidden transition-colors"
+          className="p-2 -ml-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 md:hidden transition-colors"
           id="mobile-hamburger-btn"
         >
           {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
@@ -82,10 +86,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="font-bold text-lg text-[#622569] tracking-tight font-['Poppins']">IET CONNECT</span>
-              <span className="px-2 py-0.5 text-[9px] font-bold bg-[#622569]/10 text-[#622569] rounded-md tracking-wider">PORTAL</span>
+              <span className="font-bold text-lg text-[#622569] dark:text-purple-400 tracking-tight font-['Poppins']">IET CONNECT</span>
+              <span className="px-2 py-0.5 text-[9px] font-bold bg-[#622569]/10 dark:bg-purple-500/20 text-[#622569] dark:text-purple-300 rounded-md tracking-wider">PORTAL</span>
             </div>
-            <p className="text-[10px] text-slate-500 font-medium hidden sm:block">Institution of Engineering and Technology</p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium hidden sm:block">Institution of Engineering and Technology</p>
           </div>
         </div>
       </div>
@@ -98,17 +102,29 @@ export const Navbar: React.FC<NavbarProps> = ({
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search members, projects, events..."
-          className="w-full bg-slate-50 text-slate-900 text-xs pl-10 pr-4 py-2 rounded-xl border border-slate-200/80 focus:bg-white focus:border-[#9b51e0] focus:ring-2 focus:ring-[#9b51e0]/20 outline-none transition-all"
+          className="w-full bg-slate-50 dark:bg-slate-800 text-slate-900 dark:text-white text-xs pl-10 pr-4 py-2 rounded-xl border border-slate-200/80 dark:border-slate-700 focus:bg-white dark:focus:bg-slate-900 focus:border-[#9b51e0] dark:focus:border-purple-400 focus:ring-2 focus:ring-[#9b51e0]/20 outline-none transition-all placeholder:text-slate-400 dark:placeholder:text-slate-500"
         />
       </div>
 
       {/* User Actions */}
       <div className="flex items-center gap-3">
+        {/* Dark Mode Toggle Button */}
+        {toggleDarkMode && (
+          <button
+            onClick={toggleDarkMode}
+            className="p-2.5 text-slate-600 dark:text-slate-300 hover:text-[#622569] dark:hover:text-purple-300 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 transition-colors cursor-pointer"
+            title={isDarkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            aria-label="Toggle Dark Mode"
+          >
+            {isDarkMode ? <Sun className="w-4.5 h-4.5 text-amber-400" /> : <Moon className="w-4.5 h-4.5 text-slate-600" />}
+          </button>
+        )}
+
         {user ? (
           <>
             <button
               onClick={() => handleNavClick('announcements')}
-              className="relative p-2.5 text-slate-600 hover:text-[#622569] rounded-xl hover:bg-slate-50 border border-slate-200/60 transition-colors"
+              className="relative p-2.5 text-slate-600 dark:text-slate-300 hover:text-[#622569] dark:hover:text-purple-300 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 transition-colors"
               title="Notifications"
             >
               <Bell className="w-4.5 h-4.5" />
@@ -116,31 +132,31 @@ export const Navbar: React.FC<NavbarProps> = ({
             </button>
 
             {/* User Profile Pill */}
-            <div className="flex items-center gap-3 pl-3 border-l border-slate-200">
+            <div className="flex items-center gap-3 pl-3 border-l border-slate-200 dark:border-slate-800">
               <button
                 onClick={() => handleNavClick('profile')}
-                className="flex items-center gap-2 p-1.5 pr-3 rounded-xl hover:bg-slate-50 border border-slate-200/60 transition-colors text-left group"
+                className="flex items-center gap-2 p-1.5 pr-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200/60 dark:border-slate-800 transition-colors text-left group"
               >
                 <img
                   src={user.avatarUrl || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80'}
                   alt={user.username}
-                  className="w-8 h-8 rounded-lg object-cover border border-slate-100 shadow-sm shrink-0"
+                  className="w-8 h-8 rounded-lg object-cover border border-slate-100 dark:border-slate-700 shadow-sm shrink-0"
                   referrerPolicy="no-referrer"
                 />
                 <div className="hidden sm:block font-sans">
                   <div className="flex items-center gap-1">
-                    <p className="text-xs font-bold text-slate-700 leading-tight">{user.username}</p>
+                    <p className="text-xs font-bold text-slate-700 dark:text-slate-200 leading-tight">{user.username}</p>
                     {user.role === 'lead' && (
-                      <ShieldCheck className="w-3.5 h-3.5 text-[#622569]" title="Chapter Lead" />
+                      <ShieldCheck className="w-3.5 h-3.5 text-[#622569] dark:text-purple-400" title="Chapter Lead" />
                     )}
                   </div>
-                  <p className="text-[10px] text-slate-400 truncate max-w-[100px]">{user.institution.split('-')[0]}</p>
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 truncate max-w-[100px]">{user.institution.split('-')[0]}</p>
                 </div>
               </button>
 
               <button
                 onClick={onLogout}
-                className="p-2.5 text-slate-500 hover:text-rose-600 rounded-xl hover:bg-rose-50 border border-slate-200/60 transition-colors"
+                className="p-2.5 text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 rounded-xl hover:bg-rose-50 dark:hover:bg-rose-950/30 border border-slate-200/60 dark:border-slate-800 transition-colors"
                 title="Logout"
               >
                 <LogOut className="w-4.5 h-4.5" />

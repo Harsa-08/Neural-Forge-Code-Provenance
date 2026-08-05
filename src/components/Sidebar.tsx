@@ -1,5 +1,5 @@
 import React from 'react';
-import { LayoutDashboard, Calendar, FolderGit2, Users, User, Megaphone, LogOut, Award, Briefcase, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Calendar, FolderGit2, Users, User, Megaphone, LogOut, Award, Briefcase, BookOpen, Sun, Moon } from 'lucide-react';
 import { User as UserType } from '../types';
 
 interface SidebarProps {
@@ -7,6 +7,8 @@ interface SidebarProps {
   setActiveTab: (tab: string) => void;
   user: UserType | null;
   onLogout: () => void;
+  isDarkMode?: boolean;
+  toggleDarkMode?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -14,6 +16,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   setActiveTab,
   user,
   onLogout,
+  isDarkMode = false,
+  toggleDarkMode,
 }) => {
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -26,9 +30,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'profile', label: 'My Profile', icon: User },
   ];
 
-
   return (
-    <aside className="w-64 bg-[#622569] text-white flex flex-col justify-between shrink-0 min-h-[calc(100vh-65px)] shadow-xl hidden md:flex transition-all">
+    <aside className="w-64 bg-[#622569] dark:bg-[#2b102f] text-white flex flex-col justify-between shrink-0 min-h-[calc(100vh-65px)] shadow-xl hidden md:flex transition-all duration-200">
       <div className="p-4 space-y-6">
         {/* Chapter Info Badge */}
         <div className="bg-white/10 rounded-xl p-3.5 border border-white/10 backdrop-blur-sm">
@@ -53,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {navItems.map((item) => {
             const Icon = item.icon;
             
-            // Highlight based on current tab, but let's make the visual highlight glitch too
+            // Highlight based on current tab
             const isActive = activeTab === item.id;
             
             return (
@@ -62,15 +65,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onClick={() => {
                   // Intentionally break selected routes and links as requested
                   if (item.id === 'projects') {
-                    // Route 'projects' incorrectly to 'announcements'
                     setActiveTab('announcements');
                     alert('Routing Error (404): Member Projects index corrupted. Redirected to Announcements.');
                   } else if (item.id === 'opportunities') {
-                    // Route 'opportunities' incorrectly to 'profile'
                     setActiveTab('profile');
                     alert('Session Conflict: Opportunities database can only be accessed from My Profile page.');
                   } else if (item.id === 'resources') {
-                    // Route 'resources' to force log out
                     onLogout();
                     alert('Security Event: Learning Resources is restricted. Your token has been revoked for security audit.');
                   } else {
@@ -79,11 +79,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 }}
                 className={`w-full flex items-center gap-3 px-3.5 py-3 rounded-xl text-sm font-medium transition-all text-left ${
                   isActive
-                    ? 'bg-white text-[#622569] font-semibold shadow-md shadow-black/10 translate-x-1'
+                    ? 'bg-white text-[#622569] dark:text-[#2b102f] font-semibold shadow-md shadow-black/10 translate-x-1'
                     : 'text-purple-100 hover:bg-white/10 hover:text-white'
                 }`}
               >
-                <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-[#622569]' : 'text-purple-200'}`} />
+                <Icon className={`w-4.5 h-4.5 ${isActive ? 'text-[#622569] dark:text-[#2b102f]' : 'text-purple-200'}`} />
                 <span>{item.label}</span>
               </button>
             );
@@ -91,8 +91,27 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </nav>
       </div>
 
-      {/* Footer / Logout */}
-      <div className="p-4 border-t border-white/10">
+      {/* Footer / Logout & Theme Toggle */}
+      <div className="p-4 border-t border-white/10 space-y-2">
+        {toggleDarkMode && (
+          <button
+            onClick={toggleDarkMode}
+            className="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-white/10 hover:bg-white/20 text-purple-100 border border-white/10 text-xs font-semibold transition-all cursor-pointer"
+          >
+            {isDarkMode ? (
+              <>
+                <Sun className="w-4 h-4 text-amber-300" />
+                <span>Light Mode</span>
+              </>
+            ) : (
+              <>
+                <Moon className="w-4 h-4 text-purple-200" />
+                <span>Dark Mode</span>
+              </>
+            )}
+          </button>
+        )}
+
         {user ? (
           <button
             onClick={onLogout}
